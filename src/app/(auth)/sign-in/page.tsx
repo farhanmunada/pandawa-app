@@ -19,12 +19,27 @@ export default function SignInPage() {
     setErrorMessage('');
 
     startTransition(async () => {
-      const res = await loginWithMemberCodeAction(identifier, password);
-      if (res.success) {
-        router.push('/');
-        router.refresh();
-      } else {
-        setErrorMessage(res.message || 'Nomor anggota atau kata sandi tidak cocok.');
+      try {
+        const res = await loginWithMemberCodeAction(identifier, password);
+        if (res.success) {
+          router.push('/');
+          router.refresh();
+        } else {
+          setErrorMessage(res.message || 'Nomor anggota atau kata sandi tidak cocok.');
+        }
+      } catch (err: unknown) {
+        const errorText = err instanceof Error ? err.message : String(err);
+        if (
+          errorText.includes('failed-to-find-server-action') ||
+          errorText.includes('was not found on the server') ||
+          errorText.includes('Server Action')
+        ) {
+          setErrorMessage(
+            'Sesi halaman kedaluwarsa karena pembaruan sistem. Silakan muat ulang halaman (tekan F5) lalu masuk kembali.'
+          );
+        } else {
+          setErrorMessage('Terjadi kendala koneksi saat menghubungi server. Silakan muat ulang halaman dan coba lagi.');
+        }
       }
     });
   };
@@ -56,9 +71,9 @@ export default function SignInPage() {
           </p>
         </div>
 
-        {/* Notifikasi Kesalahan */}
+        {/* Notifikasi Kesalahan yang Ditangani dengan Baik */}
         {errorMessage && (
-          <div className="mt-5 flex items-center gap-2 rounded-2xl bg-rose-50/80 px-4 py-3 text-xs text-rose-700">
+          <div className="mt-5 flex items-center gap-2.5 rounded-2xl bg-rose-50/80 px-4 py-3 text-xs text-rose-700 leading-relaxed">
             <AlertCircle className="h-4 w-4 shrink-0 text-rose-600" />
             <span>{errorMessage}</span>
           </div>
@@ -121,10 +136,23 @@ export default function SignInPage() {
           </button>
         </form>
 
+        {/* Petunjuk Kredensial Uji Akses */}
+        <div className="mt-6 rounded-2xl bg-slate-50/70 p-3.5 text-center">
+          <p className="text-[11px] font-semibold text-slate-700">
+            Akses Uji Demo:
+          </p>
+          <p className="mt-0.5 text-[10px] text-slate-500">
+            Nomor: <span className="font-mono font-bold text-slate-800">0001</span> (Ketua) atau <span className="font-mono font-bold text-slate-800">0002</span> (Wakil)
+          </p>
+          <p className="text-[10px] text-slate-500">
+            Kata Sandi: <span className="font-mono font-bold text-[#B4821E]">Password123!</span>
+          </p>
+        </div>
+
         {/* Catatan Hak Kelola Wakil Ketua */}
-        <div className="mt-8 text-center">
-          <p className="text-[11px] text-slate-400 leading-relaxed">
-            Akun dan kode akses diterbitkan langsung oleh Wakil Ketua Organisasi.
+        <div className="mt-4 text-center">
+          <p className="text-[10px] text-slate-400 leading-relaxed">
+            Akun baru diterbitkan langsung oleh Wakil Ketua Organisasi.
           </p>
         </div>
       </div>
