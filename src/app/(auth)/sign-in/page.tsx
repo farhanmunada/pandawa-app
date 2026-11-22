@@ -4,8 +4,7 @@ import React, { useState, useTransition } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { authClient } from '@/lib/auth/auth-client';
-import { resolveLoginEmailAction } from '../actions';
+import { loginWithMemberCodeAction } from '../actions';
 import { ArrowRight, Loader2, AlertCircle } from 'lucide-react';
 
 export default function SignInPage() {
@@ -20,28 +19,12 @@ export default function SignInPage() {
     setErrorMessage('');
 
     startTransition(async () => {
-      try {
-        // Resolusi kode angka anggota ke email autentikasi internal
-        const resolveRes = await resolveLoginEmailAction(identifier);
-        if (!resolveRes.success || !resolveRes.email) {
-          setErrorMessage(resolveRes.message || 'Kode akses anggota tidak dikenali.');
-          return;
-        }
-
-        const { error } = await authClient.signIn.email({
-          email: resolveRes.email,
-          password,
-        });
-
-        if (error) {
-          setErrorMessage('Kata sandi tidak sesuai dengan kode anggota.');
-          return;
-        }
-
+      const res = await loginWithMemberCodeAction(identifier, password);
+      if (res.success) {
         router.push('/');
         router.refresh();
-      } catch (err: unknown) {
-        setErrorMessage(err instanceof Error ? err.message : 'Terjadi kendala pada sistem autentikasi.');
+      } else {
+        setErrorMessage(res.message || 'Nomor anggota atau kata sandi tidak cocok.');
       }
     });
   };
@@ -49,7 +32,7 @@ export default function SignInPage() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-[#FAFAFA] px-4 py-12">
       <div className="w-full max-w-sm rounded-3xl bg-white p-8 sm:p-10 shadow-[0_12px_40px_rgba(0,0,0,0.04)]">
-        {/* Header Identitas Tanpa Border Menumpuk */}
+        {/* Header Identitas */}
         <div className="text-center">
           <div className="mx-auto mb-4 h-14 w-14 overflow-hidden rounded-2xl bg-slate-50 p-1.5 shadow-2xs">
             <Image
@@ -73,7 +56,7 @@ export default function SignInPage() {
           </p>
         </div>
 
-        {/* Notifikasi Kesalahan Minimalis */}
+        {/* Notifikasi Kesalahan */}
         {errorMessage && (
           <div className="mt-5 flex items-center gap-2 rounded-2xl bg-rose-50/80 px-4 py-3 text-xs text-rose-700">
             <AlertCircle className="h-4 w-4 shrink-0 text-rose-600" />
@@ -90,7 +73,7 @@ export default function SignInPage() {
             <input
               type="text"
               required
-              placeholder="Contoh: 0001, 1001, atau email"
+              placeholder="Contoh: 0001, 0002, 1001"
               value={identifier}
               onChange={(e) => setIdentifier(e.target.value)}
               className="mt-1.5 w-full rounded-2xl bg-slate-50 px-4 py-3 text-sm text-slate-900 placeholder:text-slate-400 focus:bg-white focus:ring-2 focus:ring-[#D8AC41]/40 outline-none transition-all"
@@ -138,7 +121,7 @@ export default function SignInPage() {
           </button>
         </form>
 
-        {/* Catatan Hak Kelola Wakil Ketua (Tanpa Garis Pemisah Kaku) */}
+        {/* Catatan Hak Kelola Wakil Ketua */}
         <div className="mt-8 text-center">
           <p className="text-[11px] text-slate-400 leading-relaxed">
             Akun dan kode akses diterbitkan langsung oleh Wakil Ketua Organisasi.

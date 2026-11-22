@@ -1,8 +1,7 @@
-import { headers } from 'next/headers';
 import { db } from '@/lib/db';
 import { userRoles, roles, periods } from '@/lib/db/schema';
 import { eq, and } from 'drizzle-orm';
-import { auth } from './better-auth';
+import { getSessionUser } from './session';
 import { PERMISSIONS, PermissionKey, RoleKey } from './permissions';
 
 export interface UserSessionData {
@@ -12,18 +11,17 @@ export interface UserSessionData {
 }
 
 /**
- * Mengambil sesi pengguna aktif di sisi server via Better Auth.
+ * Mengambil sesi pengguna aktif di sisi server via native session cookie.
  */
 export async function getCurrentUserSession() {
   try {
-    const session = await auth.api.getSession({
-      headers: await headers(),
-    });
-    if (!session?.user) return null;
-    const { roles: userRolesList, periodId } = await getUserActiveRoles(session.user.id);
+    const sessionData = await getSessionUser();
+    if (!sessionData?.user) return null;
+
+    const { roles: userRolesList, periodId } = await getUserActiveRoles(sessionData.user.id);
     return {
-      user: session.user,
-      session: session.session,
+      user: sessionData.user,
+      session: sessionData.session,
       roles: userRolesList,
       periodId,
     };
@@ -36,7 +34,6 @@ export async function getCurrentUserSession() {
  * Mendapatkan daftar role aktif untuk user pada periode yang sedang berjalan.
  */
 export async function getUserActiveRoles(userId: string): Promise<{ roles: RoleKey[]; periodId?: number }> {
-  // Dapatkan periode aktif
   const activePeriod = await db.query.periods.findFirst({
     where: eq(periods.isActive, true),
   });
@@ -45,7 +42,6 @@ export async function getUserActiveRoles(userId: string): Promise<{ roles: RoleK
     return { roles: [] };
   }
 
-  // Dapatkan relasi role user pada periode aktif
   const userRoleRecords = await db
     .select({
       roleKey: roles.key,
@@ -70,12 +66,10 @@ export function hasPermission(userRoleKeys: RoleKey[], permission: PermissionKey
   const allowedRoles = PERMISSIONS[permission];
   if (!allowedRoles) return false;
 
-  // Jika izin terbuka untuk semua pengguna bertanda '*'
   if ((allowedRoles as readonly string[]).includes('*')) {
     return true;
   }
 
-  // Cek apakah ada irisan peran
   return userRoleKeys.some((role) => (allowedRoles as readonly string[]).includes(role));
 }
 

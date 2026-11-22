@@ -5,7 +5,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { ArrowRight, ArrowLeft, Loader2, CheckCircle2, AlertCircle } from 'lucide-react';
-import { requestPasswordResetAction, resetPasswordWithTokenAction, resolveLoginEmailAction } from '../actions';
+import { requestPasswordResetAction, resetPasswordWithTokenAction } from '../actions';
 
 function ResetPasswordForm() {
   const router = useRouter();
@@ -14,7 +14,6 @@ function ResetPasswordForm() {
 
   const [step, setStep] = useState<'REQUEST' | 'RESET'>(initialToken ? 'RESET' : 'REQUEST');
   const [identifier, setIdentifier] = useState('');
-  const [resolvedEmail, setResolvedEmail] = useState('');
   const [token, setToken] = useState(initialToken);
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -26,18 +25,7 @@ function ResetPasswordForm() {
     setStatusMessage(null);
 
     startTransition(async () => {
-      // Resolusi nomor anggota / identifier ke email
-      const resolveRes = await resolveLoginEmailAction(identifier);
-      if (!resolveRes.success || !resolveRes.email) {
-        setStatusMessage({
-          type: 'error',
-          text: resolveRes.message || 'Nomor anggota tidak ditemukan.',
-        });
-        return;
-      }
-
-      setResolvedEmail(resolveRes.email);
-      const res = await requestPasswordResetAction(resolveRes.email);
+      const res = await requestPasswordResetAction(identifier);
       if (res.success) {
         setStatusMessage({ type: 'success', text: res.message });
         if (res.devToken) {
@@ -61,7 +49,7 @@ function ResetPasswordForm() {
 
     startTransition(async () => {
       const res = await resetPasswordWithTokenAction({
-        email: resolvedEmail || identifier,
+        identifier,
         token,
         newPassword,
       });

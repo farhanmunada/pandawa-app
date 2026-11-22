@@ -7,16 +7,18 @@ import { MobileDrawer } from './MobileDrawer';
 
 interface AppShellProps {
   children: React.ReactNode;
+  userName?: string;
+  userRole?: string;
 }
 
-export function AppShell({ children }: AppShellProps) {
+export function AppShell({ children, userName, userRole }: AppShellProps) {
   const [drawerOpen, setDrawerOpen] = useState(false);
 
   return (
     <div className="flex min-h-screen flex-col bg-white text-slate-900">
-      <HeaderBar onOpenDrawer={() => setDrawerOpen(true)} />
+      <HeaderBar onOpenDrawer={() => setDrawerOpen(true)} userName={userName} />
       <Suspense fallback={null}>
-        <MobileDrawer isOpen={drawerOpen} onClose={() => setDrawerOpen(false)} />
+        <MobileDrawer isOpen={drawerOpen} onClose={() => setDrawerOpen(false)} userName={userName} userRole={userRole} />
       </Suspense>
 
       <main className="flex-1 pb-20 md:pb-10">

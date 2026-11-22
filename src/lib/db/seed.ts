@@ -1,7 +1,6 @@
 import { db } from './index';
-import { roles, periods, userRoles, members, user, wallets, assets } from './schema';
+import { roles, periods, userRoles, members, user, account, wallets, assets } from './schema';
 import { ROLE_KEYS } from '../auth/permissions';
-import { auth } from '../auth/better-auth';
 import { eq } from 'drizzle-orm';
 
 export async function seedInitialData() {
@@ -156,18 +155,23 @@ export async function seedInitialData() {
     let userId = existingUser?.id;
 
     if (!userId) {
-      try {
-        const signupRes = await auth.api.signUpEmail({
-          body: {
-            name: acc.name,
-            email: acc.email,
-            password: acc.password,
-          },
-        });
-        userId = signupRes?.user?.id;
-      } catch (err) {
-        console.warn(`Account ${acc.email} might already exist:`, err);
-      }
+      userId = `usr_demo_${acc.phone.slice(-4)}`;
+      await db.insert(user).values({
+        id: userId,
+        name: acc.name,
+        email: acc.email,
+        phone: acc.phone,
+        emailVerified: true,
+        isActive: true,
+      });
+
+      await db.insert(account).values({
+        id: `acc_demo_${acc.phone.slice(-4)}`,
+        accountId: userId,
+        providerId: 'credential',
+        userId,
+        password: acc.password,
+      });
     }
 
     if (userId) {

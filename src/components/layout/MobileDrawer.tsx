@@ -18,20 +18,18 @@ import {
   LogOut,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { authClient } from '@/lib/auth/auth-client';
+import { logoutAction } from '@/app/(auth)/actions';
 
 interface MobileDrawerProps {
   isOpen: boolean;
   onClose: () => void;
+  userName?: string;
+  userRole?: string;
 }
 
-export function MobileDrawer({ isOpen, onClose }: MobileDrawerProps) {
+export function MobileDrawer({ isOpen, onClose, userName = 'Pengurus' }: MobileDrawerProps) {
   const pathname = usePathname();
   const router = useRouter();
-  const { data: sessionData } = authClient.useSession();
-
-  const currentUser = sessionData?.user;
-  const displayName = currentUser?.name || 'Pengurus';
 
   const menuSections = [
     {
@@ -56,7 +54,7 @@ export function MobileDrawer({ isOpen, onClose }: MobileDrawerProps) {
 
   const handleSignOut = async () => {
     try {
-      await authClient.signOut();
+      await logoutAction();
       onClose();
       router.push('/sign-in');
       router.refresh();
@@ -71,34 +69,34 @@ export function MobileDrawer({ isOpen, onClose }: MobileDrawerProps) {
     <div className="fixed inset-0 z-50 flex">
       {/* Backdrop */}
       <div
-        className="fixed inset-0 bg-slate-900/40 backdrop-blur-xs transition-opacity"
+        className="fixed inset-0 bg-slate-900/30 backdrop-blur-xs transition-opacity"
         onClick={onClose}
         aria-hidden="true"
       />
 
       {/* Drawer Panel */}
-      <div className="relative z-10 flex w-full max-w-xs flex-col bg-white border-r border-slate-200 shadow-xl">
+      <div className="relative z-10 flex w-full max-w-xs flex-col bg-white shadow-2xl">
         {/* Header Drawer */}
-        <div className="flex items-center justify-between border-b border-slate-200 p-4">
-          <div className="flex items-center gap-2.5">
-            <div className="relative h-8 w-8 flex-shrink-0 overflow-hidden rounded-md border border-slate-200 bg-white p-0.5">
+        <div className="flex items-center justify-between border-b border-slate-100 p-5">
+          <div className="flex items-center gap-3">
+            <div className="relative h-9 w-9 shrink-0 overflow-hidden rounded-xl bg-slate-50 p-1">
               <Image
                 src="/favicon.png"
                 alt="Logo Pandawa"
-                width={32}
-                height={32}
+                width={36}
+                height={36}
                 className="h-full w-full object-contain"
               />
             </div>
             <div>
               <p className="text-xs font-bold text-slate-900 leading-none">PANDAWA APP</p>
-              <p className="text-[10px] text-[#B4821E] font-medium leading-tight">Wanangsri, Wonoboyo</p>
+              <p className="text-[10px] text-[#B4821E] font-medium leading-tight mt-0.5">Wanangsri, Wonoboyo</p>
             </div>
           </div>
           <button
             type="button"
             onClick={onClose}
-            className="flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200 text-slate-500 hover:bg-slate-50 transition-colors cursor-pointer"
+            className="flex h-8 w-8 items-center justify-center rounded-xl bg-slate-50 text-slate-500 hover:bg-slate-100 transition-colors cursor-pointer"
             aria-label="Tutup Menu"
           >
             <X className="h-4 w-4" />
@@ -106,16 +104,16 @@ export function MobileDrawer({ isOpen, onClose }: MobileDrawerProps) {
         </div>
 
         {/* Info Pengguna Aktif */}
-        <div className="border-b border-slate-100 bg-slate-50/70 px-4 py-3">
-          <p className="text-xs font-bold text-slate-900 truncate">{displayName}</p>
-          <p className="text-[10px] text-slate-500 truncate">{currentUser?.email || 'Akun Pengurus'}</p>
+        <div className="bg-slate-50/70 px-5 py-3.5">
+          <p className="text-xs font-bold text-slate-900 truncate">{userName}</p>
+          <p className="text-[10px] text-slate-400">Pengurus Aktif</p>
         </div>
 
         {/* Menu Navigation List */}
         <div className="flex-1 overflow-y-auto p-4 space-y-5">
           {menuSections.map((section) => (
-            <div key={section.title} className="space-y-1.5">
-              <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400 px-2.5">
+            <div key={section.title} className="space-y-1">
+              <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400 px-3">
                 {section.title}
               </p>
               <div className="space-y-0.5">
@@ -129,7 +127,7 @@ export function MobileDrawer({ isOpen, onClose }: MobileDrawerProps) {
                       href={item.href}
                       onClick={onClose}
                       className={cn(
-                        'flex items-center justify-between rounded-lg px-2.5 py-2 text-xs font-medium transition-colors cursor-pointer',
+                        'flex items-center justify-between rounded-xl px-3 py-2 text-xs font-medium transition-colors cursor-pointer',
                         isActive
                           ? 'bg-slate-900 text-white font-semibold'
                           : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
@@ -144,7 +142,7 @@ export function MobileDrawer({ isOpen, onClose }: MobileDrawerProps) {
                         />
                         <span>{item.label}</span>
                       </div>
-                      <ArrowRight className="h-3 w-3 opacity-40" />
+                      <ArrowRight className="h-3 w-3 opacity-30" />
                     </Link>
                   );
                 })}
@@ -154,11 +152,11 @@ export function MobileDrawer({ isOpen, onClose }: MobileDrawerProps) {
         </div>
 
         {/* Footer Tombol Keluar */}
-        <div className="border-t border-slate-200 p-3 bg-slate-50">
+        <div className="p-4 bg-slate-50/50">
           <button
             type="button"
             onClick={handleSignOut}
-            className="flex w-full items-center justify-center gap-2 rounded-lg border border-rose-200 bg-white py-2 text-xs font-semibold text-rose-700 hover:bg-rose-50 transition-colors cursor-pointer"
+            className="flex w-full items-center justify-center gap-2 rounded-xl bg-white py-2.5 text-xs font-semibold text-rose-700 shadow-xs hover:bg-rose-50 transition-colors cursor-pointer"
           >
             <LogOut className="h-3.5 w-3.5 text-rose-600" />
             <span>Keluar Akun</span>
