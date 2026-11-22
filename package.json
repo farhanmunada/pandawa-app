@@ -9,11 +9,9 @@
     "lint": "eslint"
   },
   "dependencies": {
-    "@better-auth/infra": "^0.4.31",
     "@neon/config": "^1.14.6",
     "@neon/env": "^2.1.9",
     "@neondatabase/serverless": "^1.2.1",
-    "better-auth": "^1.7.27",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "drizzle-orm": "^0.45.4",

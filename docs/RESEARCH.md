@@ -36,13 +36,13 @@ Organisasi kepemudaan (seperti Karang Taruna atau komunitas pemuda) memiliki din
   * Waktu *cold start* mendekati nol, jauh lebih cepat dibanding Prisma pada lingkungan serverless.
   * Skema didefinisikan secara deklaratif di TypeScript (`schema.ts`) dengan migrasi aman via `drizzle-kit`.
 
-### 2.3 Autentikasi & Dynamic Multi-Role RBAC: Better Auth
-* **Evaluasi Solusi:**
-  * *NextAuth (Auth.js v5):* Stabil, namun pengelolaan multi-role dinamis dan permission matrix memerlukan kustomisasi token/session callback yang cukup rumit.
-  * *Better Auth:* Native TypeScript, mendukung multi-role dan RBAC secara bawaan, manajemen session berbasis database yang aman, dan mendukung ekstensi custom role/permission dengan rapi.
+### 2.3 Autentikasi Internal Mandiri (Native Session HTTP-Only Cookie)
+* **Arsitektur Autentikasi:**
+  * Tidak menggunakan Better Auth maupun library OAuth pihak ketiga untuk alur masuk pengguna.
+  * Login menggunakan **Nomor Anggota (Kode Angka)** atau email dengan kata sandi terverifikasi langsung ke tabel `account` dan `user`.
+  * Sesi divalidasi melalui token acak `crypto.randomBytes(32)` yang tersimpan di tabel `session` PostgreSQL dan dikirimkan lewat cookie HTTP-only (`pandawa_session`) yang aman (SameSite=Lax, Secure).
 * **Pola Otorisasi:**
-  * Sesi divalidasi di layer middleware (untuk route protection) dan *Server Actions* (untuk otorisasi fungsional di server-side).
-  * Tabel relasi `user_roles` dan matriks permission granular (`module:action`) untuk memastikan pengguna hanya dapat mengeksekusi aksi yang diizinkan.
+  * Otorisasi dilakukan di layer Server Components (page guards) dan Server Actions via tabel relasi `user_roles` dan matriks permission granular (`PERMISSIONS` di `src/lib/auth/permissions.ts`).
 
 ### 2.4 Penyimpanan File & Dokumen: Google Drive API v3 (OAuth 2.0)
 * **Strategi Biaya Rp0:**
