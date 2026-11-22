@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
-import React from 'react';
-import Image from 'next/image';
-import Link from 'next/link';
-import { usePathname, useRouter } from 'next/navigation';
+import React from "react";
+import Image from "next/image";
+import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
 import {
   Home,
   Calendar,
@@ -15,9 +15,9 @@ import {
   ShieldAlert,
   ClipboardList,
   LogOut,
-} from 'lucide-react';
-import { cn } from '@/lib/utils';
-import { logoutAction } from '@/app/(auth)/actions';
+} from "lucide-react";
+import { cn } from "@/lib/utils";
+import { logoutAction } from "@/app/(auth)/actions";
 
 interface SidebarProps {
   userName?: string;
@@ -26,60 +26,82 @@ interface SidebarProps {
 }
 
 export function Sidebar({
-  userName = 'Pengurus',
-  userRole = 'Anggota',
+  userName = "Pengurus",
+  userRole = "Anggota",
   userRoles = [],
 }: SidebarProps) {
   const pathname = usePathname();
   const router = useRouter();
 
-  const isSuperAdmin = userRoles.includes('super_admin');
+  const isSuperAdmin = userRoles.includes("super_admin");
   const isLeader =
-    isSuperAdmin || userRoles.includes('ketua_umum') || userRoles.includes('wakil_ketua');
-  const isSecretary = isSuperAdmin || userRoles.includes('sekretaris');
-  const isFinance = isSuperAdmin || userRoles.includes('bendahara');
-  const isHumas = isSuperAdmin || userRoles.includes('divisi_humas');
+    isSuperAdmin ||
+    userRoles.includes("ketua_umum") ||
+    userRoles.includes("wakil_ketua");
+  const isSecretary = isSuperAdmin || userRoles.includes("sekretaris");
+  const isFinance = isSuperAdmin || userRoles.includes("bendahara");
+  const isHumas = isSuperAdmin || userRoles.includes("divisi_humas");
 
   const rawMenuGroups = [
     {
-      title: 'Ruang Publik & Anggota',
+      title: "Dashboard",
       items: [
-        { label: 'Ringkasan & Transparansi', href: '/', icon: Home, visible: true },
-        { label: 'Kalender Kegiatan', href: '/events', icon: Calendar, visible: true },
-        { label: 'Katalog Pinjam Aset', href: '/inventory', icon: Package, visible: true },
-        { label: 'Aspirasi & Pengaduan', href: '/incidents', icon: ShieldAlert, visible: true },
+        {
+          label: "Home",
+          href: "/",
+          icon: Home,
+          visible: true,
+        },
+        {
+          label: "Kalender",
+          href: "/events",
+          icon: Calendar,
+          visible: true,
+        },
+        {
+          label: "Inventaris",
+          href: "/inventory",
+          icon: Package,
+          visible: true,
+        },
+        {
+          label: "Aspirasi & Pengaduan",
+          href: "/incidents",
+          icon: ShieldAlert,
+          visible: true,
+        },
       ],
     },
     {
-      title: 'Meja Kerja Pengurus',
+      title: "Menu Khusus",
       items: [
         {
-          label: 'Buku Kas & Selapanan',
-          href: '/finance',
+          label: "Buku Kas",
+          href: "/finance",
           icon: Wallet,
           visible: isLeader || isFinance,
         },
         {
-          label: 'Tata Kelola Persuratan',
-          href: '/letters',
+          label: "Persuratan",
+          href: "/letters",
           icon: FileText,
           visible: isLeader || isSecretary,
         },
         {
-          label: 'Broadcast Sounding',
-          href: '/events/sounding',
+          label: "Broadcast",
+          href: "/events/sounding",
           icon: Megaphone,
           visible: isLeader || isHumas,
         },
         {
-          label: 'Administrasi Anggota',
-          href: '/internal/members',
+          label: "Anggota",
+          href: "/internal/members",
           icon: Users,
           visible: isLeader,
         },
         {
-          label: 'Jejak Audit Sistem',
-          href: '/audit',
+          label: "Audit Sistem",
+          href: "/audit",
           icon: ClipboardList,
           visible: isLeader,
         },
@@ -97,17 +119,19 @@ export function Sidebar({
   const allHrefs = menuGroups.flatMap((g) => g.items.map((i) => i.href));
   const activeHref = allHrefs
     .filter((href) =>
-      href === '/' ? pathname === '/' : pathname === href || pathname.startsWith(href + '/')
+      href === "/"
+        ? pathname === "/"
+        : pathname === href || pathname.startsWith(href + "/"),
     )
     .sort((a, b) => b.length - a.length)[0];
 
   const handleSignOut = async () => {
     try {
       await logoutAction();
-      router.push('/sign-in');
+      router.push("/sign-in");
       router.refresh();
     } catch {
-      router.push('/sign-in');
+      router.push("/sign-in");
     }
   };
 
@@ -135,7 +159,9 @@ export function Sidebar({
                 Internal
               </span>
             </div>
-            <p className="text-[11px] text-slate-400 mt-1 truncate">Wanangsri, Wonoboyo</p>
+            <p className="text-[11px] text-slate-400 mt-1 truncate">
+              Wanangsri, Wonoboyo
+            </p>
           </div>
         </div>
 
@@ -156,16 +182,18 @@ export function Sidebar({
                       key={item.href}
                       href={item.href}
                       className={cn(
-                        'group flex items-center gap-2.5 rounded-2xl px-3.5 py-2.5 text-xs font-medium transition-all cursor-pointer',
+                        "group flex items-center gap-2.5 rounded-2xl px-3.5 py-2.5 text-xs font-medium transition-all cursor-pointer",
                         isActive
-                          ? 'bg-slate-900 text-white font-semibold shadow-xs'
-                          : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
+                          ? "bg-slate-900 text-white font-semibold shadow-xs"
+                          : "text-slate-600 hover:bg-slate-50 hover:text-slate-900",
                       )}
                     >
                       <Icon
                         className={cn(
-                          'h-4 w-4 shrink-0 transition-colors',
-                          isActive ? 'text-[#D8AC41]' : 'text-slate-400 group-hover:text-slate-600'
+                          "h-4 w-4 shrink-0 transition-colors",
+                          isActive
+                            ? "text-[#D8AC41]"
+                            : "text-slate-400 group-hover:text-slate-600",
                         )}
                       />
                       <span className="truncate">{item.label}</span>
@@ -182,7 +210,9 @@ export function Sidebar({
       <div className="pt-4 mt-4 border-t border-slate-100 space-y-2">
         <div className="flex items-center justify-between rounded-2xl bg-slate-50/80 p-3">
           <div className="min-w-0 flex-1">
-            <p className="text-xs font-bold text-slate-900 truncate">{userName}</p>
+            <p className="text-xs font-bold text-slate-900 truncate">
+              {userName}
+            </p>
             <p className="text-[10px] text-slate-400 truncate">{userRole}</p>
           </div>
           <button

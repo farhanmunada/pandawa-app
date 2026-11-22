@@ -225,4 +225,37 @@ flowchart TD
 * Bendahara memiliki antarmuka matriks cepat untuk mencatat pembayaran anggota dengan 1-klik lunas.
 * Setiap pencatatan otomatis menambah saldo Kas Utama Organisasi dan memperbarui kartu status iuran di dashboard pribadi anggota masing-masing.
 
+---
+
+### 7.3 Tata Kelola Keanggotaan: Penomoran Otomatis, Divisi vs Jabatan, & Soft Delete
+
+#### 1. Perbedaan Mendasar: Divisi vs Jabatan Struktural
+* **Divisi** merupakan *unit kerja / bidang fungsional* (contoh: Divisi Acara, Divisi Humas, Divisi Logistik, Divisi Keamanan, BPH, atau Anggota Umum).
+* **Jabatan Struktural** merupakan *peran hierarkis orang tersebut di dalam divisi/organisasinya* (contoh: di BPH ada Ketua Umum, Wakil Ketua, Bendahara, Sekretaris; di Sie Acara ada Koordinator Sie dan Anggota Sie; sedangkan bagi anggota biasa jabatannya adalah Anggota Aktif).
+* **Otomasi Solusi UX:** Agar pengguna tidak bingung, dropdown jabatan struktural tidak lagi diisi manual bebas, melainkan otomatis sinkron dengan pilihan divisi:
+  * Memilih *BPH* -> Pilihan: Ketua Umum, Wakil Ketua, Sekretaris, Bendahara.
+  * Memilih *Divisi Khusus (Acara/Humas/Logistik/Keamanan)* -> Pilihan: Koordinator Sie atau Anggota Sie (default: Anggota Sie).
+  * Memilih *Anggota* -> Terkunci otomatis sebagai *Anggota Aktif*.
+
+#### 2. Skema Penomoran Otomatis (Auto-Generated & Readonly)
+* **Anggota Pengurus / Divisi Khusus:** Dimulai dari rentang **1000** (`1001`, `1002`, `1003`, dst.) berdasarkan nomor tertinggi yang telah digunakan.
+* **Anggota Biasa (Umum):** Dimulai dari rentang **2000** (`2001`, `2002`, `2003`, dst.) berurutan.
+* Input nomor anggota bersifat terkunci (*readonly / disabled*) di formulir tambah maupun ubah anggota, sehingga tertib dan bebas duplikasi.
+* Seluruh data eksisting di basis data (seperti `0000`, `0001`, `0002`, `0003`, `0004`) tetap aman dan tidak diubah.
+
+#### 3. Mekanisme Soft Delete dengan Persetujuan Ketua Umum
+* Tombol hapus dialihkan menjadi **"Nonaktifkan Keanggotaan"** (Soft Delete).
+* Tidak ada baris data yang dihapus secara fisik (`DELETE`) dari basis data PostgreSQL.
+* Alur Otorisasi:
+  1. Wakil Ketua mengajukan penonaktifan -> status anggota beralih menjadi `pending_deactivation` (tampil badge "Menunggu Persetujuan Ketua").
+  2. Ketua Umum (atau Super Admin) meninjau dan menyetujui -> status anggota beralih menjadi `inactive`.
+  3. Anggota berstatus `inactive` disembunyikan dari sistem operasional aktif dan tidak dihitung dalam KPI dashboard, namun tetap tersimpan pada tab arsip.
+
+#### 4. Kebutuhan Formulir Anggota Baru
+* **Nama Lengkap:** Wajib diisi.
+* **Nomor WhatsApp / Telepon:** Wajib diisi.
+* **Divisi:** Wajib dipilih.
+* **Email:** Bersifat opsional (jika dikosongkan, sistem mengisi identitas internal unik otomatis).
+
+
 

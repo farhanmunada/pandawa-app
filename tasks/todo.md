@@ -71,5 +71,11 @@
 - [ ] Alur 2 (Sie Acara -> Tiga Serangkai -> Humas): Pengajuan agenda baru dengan RAB & draf surat, verifikasi simultan (Ketua Umum, Bendahara, Sekretaris), serta aktivasi tombol Sounding WA Grup <!-- id: 7.4 -->
 - [ ] Alur 3 (Delegasi Acara & LPJ): Penunjukan PIC Dana Acara lewat Surat Tugas resmi dari Sekretaris, pencatatan iuran khusus acara, dan formulir Berita Acara LPJ pasca acara <!-- id: 7.5 -->
 
+## Phase 8: Tata Kelola Anggota — Penomoran Otomatis & Soft Delete Persetujuan Ketua
+- [ ] Penomoran Anggota Otomatis (`actions.ts`): Dimulai dari 1000 untuk divisi khusus dan 2000 untuk anggota biasa, terkunci readonly di modal <!-- id: 8.1 -->
+- [ ] Sinkronisasi Jabatan Struktural vs Divisi (`CreateMemberModal.tsx`, `EditMemberModal.tsx`): Pilihan jabatan otomatis mengikuti divisi, email opsional <!-- id: 8.2 -->
+- [ ] Soft Delete Keanggotaan (`actions.ts`, `DeleteMemberModal.tsx`, `MembersManagementView.tsx`): Alur penonaktifan diajukan Wakil Ketua, wajib disetujui Ketua Umum sebelum `inactive` <!-- id: 8.3 -->
+
+
 
 
