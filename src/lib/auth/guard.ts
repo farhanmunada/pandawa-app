@@ -1,8 +1,8 @@
 import { db } from '@/lib/db';
-import { userRoles, roles, periods } from '@/lib/db/schema';
+import { userRoles, roles, periods, members } from '@/lib/db/schema';
 import { eq, and } from 'drizzle-orm';
 import { getSessionUser } from './session';
-import { PERMISSIONS, PermissionKey, RoleKey } from './permissions';
+import { PERMISSIONS, PermissionKey, RoleKey, ROLE_KEYS } from './permissions';
 
 export interface UserSessionData {
   userId: string;
@@ -19,11 +19,17 @@ export async function getCurrentUserSession() {
     if (!sessionData?.user) return null;
 
     const { roles: userRolesList, periodId } = await getUserActiveRoles(sessionData.user.id);
+
+    const memberRecord = await db.query.members.findFirst({
+      where: eq(members.userId, sessionData.user.id),
+    });
+
     return {
       user: sessionData.user,
       session: sessionData.session,
       roles: userRolesList,
       periodId,
+      member: memberRecord || null,
     };
   } catch {
     return null;
@@ -63,6 +69,11 @@ export async function getUserActiveRoles(userId: string): Promise<{ roles: RoleK
  * Memeriksa apakah sekumpulan peran memiliki izin yang diminta.
  */
 export function hasPermission(userRoleKeys: RoleKey[], permission: PermissionKey): boolean {
+  // Super Admin memiliki akses penuh ke seluruh fitur tanpa batasan
+  if (userRoleKeys.includes(ROLE_KEYS.SUPER_ADMIN)) {
+    return true;
+  }
+
   const allowedRoles = PERMISSIONS[permission];
   if (!allowedRoles) return false;
 

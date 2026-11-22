@@ -1,4 +1,5 @@
 export const ROLE_KEYS = {
+  SUPER_ADMIN: 'super_admin',
   KETUA_UMUM: 'ketua_umum',
   WAKIL_KETUA: 'wakil_ketua',
   SEKRETARIS: 'sekretaris',

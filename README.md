@@ -19,16 +19,21 @@ Platform tata kelola administrasi, keuangan, persuratan resmi, sirkulasi aset, m
 
 Sistem ini bersifat internal tertutup tanpa pendaftaran publik mandiri. Setiap anggota dan pengurus menggunakan **Nomor Anggota (Kode Angka)** dan kata sandi yang diterbitkan oleh Wakil Ketua Organisasi.
 
-Kata sandi bawaan untuk seluruh akun demo: `1234`
+* Akun Super Admin: Nomor `0000`, Kata Sandi: `0000` (Akses penuh ke seluruh modul sistem).
+* Akun Pengurus & Anggota: Kata sandi bawaan `1234`.
 
 | Jabatan / Peran | Nomor Anggota (Kode Akses) | Email Alternatif | Divisi | Hak Akses Utama |
 |---|---|---|---|---|
+| **Super Administrator** | `0000` (atau `ANG-0000`) | `admin@pandawa.test` | BPH | Akses bypass ke seluruh modul, konfigurasi, dan fitur operasional |
 | **Ketua Umum** | `0001` (atau `ANG-0001`) | `ketua@pandawa.test` | BPH | Supervisi penuh, approval kas > Rp500.000, pengesahan surat |
 | **Wakil Ketua** | `0002` (atau `ANG-0002`) | `wakil@pandawa.test` | BPH | Tata kelola keanggotaan, pendaftaran akun baru, penugasan divisi |
 | **Sekretaris Umum** | `0003` (atau `ANG-0003`) | `sekretaris@pandawa.test` | Kesekretariatan | Surat masuk, surat keluar otomatis, lembar disposisi |
 | **Bendahara Umum** | `0004` (atau `ANG-0004`) | `bendahara@pandawa.test` | Keuangan | Arus kas multi-wallet, verifikasi nota bukti, iuran rutin |
 | **Koordinator Humas** | `0005` (atau `ANG-0005`) | `humas@pandawa.test` | Divisi Humas | Kalender terpadu, generator siaran sounding WhatsApp |
 | **Anggota Aktif** | `0006` (atau `ANG-0006`) | `anggota@pandawa.test` | Anggota | Kalender agenda, peminjaman aset warga subsidi, forum aspirasi |
+| **Koordinator Acara** | `0007` (atau `ANG-0007`) | `acara@pandawa.test` | Divisi Acara | Perencanaan kegiatan, RAB, tracking formulir iuran acara |
+| **Koordinator Logistik** | `0008` (atau `ANG-0008`) | `logistik@pandawa.test` | Divisi Logistik | Katalog inventaris, peminjaman skema tarif ganda warga & umum |
+| **Koordinator Keamanan** | `0009` (atau `ANG-0009`) | `keamanan@pandawa.test` | Divisi Keamanan | Penanganan insiden lapangan, tiket pengaduan publik & rahasia |
 
 ---
 

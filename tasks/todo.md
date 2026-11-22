@@ -49,3 +49,10 @@
 - [x] Pengujian E2E Otorisasi Server Action & Dynamic RBAC Divisi <!-- id: 5.3 -->
 - [x] Pengujian Kompresi Gambar & Upload GDrive <!-- id: 5.4 -->
 - [x] Dokumentasi & Panduan Deployment Vercel + Neon <!-- id: 5.5 -->
+
+## Update: Super Admin 0000 & Dinamisasi Dashboard RBAC PRD
+- [x] Akun Super Admin `0000` / `0000` dengan hak akses tak terbatas ke seluruh modul <!-- id: u.1 -->
+- [x] Partisi hak akses modul dashboard & tombol aksi cepat sesuai matriks PRD <!-- id: u.2 -->
+- [x] Agregasi data metrik KPI dinamis langsung dari database PostgreSQL (`wallets`, `members`, `assets`, `events`, `incidents`, `letters`) <!-- id: u.3 -->
+- [x] Penampilan profil (kode anggota, divisi, jabatan) murni dari database tanpa teks manual <!-- id: u.4 -->
+- [x] Desain antarmuka frameless modern, bersih, tanpa border berlebihan <!-- id: u.5 -->

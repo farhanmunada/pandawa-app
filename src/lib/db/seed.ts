@@ -8,6 +8,12 @@ export async function seedInitialData() {
 
   const initialRoles = [
     {
+      key: ROLE_KEYS.SUPER_ADMIN,
+      name: 'Super Administrator',
+      division: 'BPH',
+      description: 'Akses penuh tanpa batas ke seluruh modul dan fitur sistem.',
+    },
+    {
       key: ROLE_KEYS.KETUA_UMUM,
       name: 'Ketua Umum',
       division: 'BPH',
@@ -87,8 +93,18 @@ export async function seedInitialData() {
 
   if (!activePeriod) return;
 
-  // Daftar Akun Demo untuk Setiap Peran
+  // Daftar Akun Demo untuk Setiap Peran (Super Admin 0000 & Divisi)
   const demoAccounts = [
+    {
+      name: 'Super Administrator',
+      email: 'admin@pandawa.test',
+      password: '0000',
+      roleKey: ROLE_KEYS.SUPER_ADMIN,
+      positionTitle: 'Super Administrator',
+      division: 'BPH',
+      phone: '081200000000',
+      memberNumber: '0000',
+    },
     {
       name: 'Ketua Umum Pandawa',
       email: 'ketua@pandawa.test',
@@ -97,6 +113,7 @@ export async function seedInitialData() {
       positionTitle: 'Ketua Umum',
       division: 'BPH',
       phone: '081211110001',
+      memberNumber: '0001',
     },
     {
       name: 'Wakil Ketua Internal',
@@ -106,6 +123,7 @@ export async function seedInitialData() {
       positionTitle: 'Wakil Ketua',
       division: 'BPH',
       phone: '081211110002',
+      memberNumber: '0002',
     },
     {
       name: 'Sekretaris Pandawa',
@@ -115,6 +133,7 @@ export async function seedInitialData() {
       positionTitle: 'Sekretaris Umum',
       division: 'Kesekretariatan',
       phone: '081211110003',
+      memberNumber: '0003',
     },
     {
       name: 'Bendahara Pandawa',
@@ -124,6 +143,7 @@ export async function seedInitialData() {
       positionTitle: 'Bendahara Umum',
       division: 'Keuangan',
       phone: '081211110004',
+      memberNumber: '0004',
     },
     {
       name: 'Koordinator Humas',
@@ -133,6 +153,37 @@ export async function seedInitialData() {
       positionTitle: 'Koordinator Sie Humas',
       division: 'Divisi Humas',
       phone: '081211110005',
+      memberNumber: '0005',
+    },
+    {
+      name: 'Koordinator Acara',
+      email: 'acara@pandawa.test',
+      password: '1234',
+      roleKey: ROLE_KEYS.DIVISI_ACARA,
+      positionTitle: 'Koordinator Sie Acara',
+      division: 'Divisi Acara',
+      phone: '081211110007',
+      memberNumber: '0007',
+    },
+    {
+      name: 'Koordinator Logistik',
+      email: 'logistik@pandawa.test',
+      password: '1234',
+      roleKey: ROLE_KEYS.DIVISI_LOGISTIK,
+      positionTitle: 'Koordinator Sie Logistik',
+      division: 'Divisi Logistik',
+      phone: '081211110008',
+      memberNumber: '0008',
+    },
+    {
+      name: 'Koordinator Keamanan',
+      email: 'keamanan@pandawa.test',
+      password: '1234',
+      roleKey: ROLE_KEYS.DIVISI_KEAMANAN,
+      positionTitle: 'Koordinator Sie Keamanan',
+      division: 'Divisi Keamanan',
+      phone: '081211110009',
+      memberNumber: '0009',
     },
     {
       name: 'Anggota Aktif',
@@ -142,6 +193,7 @@ export async function seedInitialData() {
       positionTitle: 'Anggota',
       division: 'Anggota',
       phone: '081211110006',
+      memberNumber: '0006',
     },
   ];
 
@@ -155,7 +207,7 @@ export async function seedInitialData() {
     let userId = existingUser?.id;
 
     if (!userId) {
-      userId = `usr_demo_${acc.phone.slice(-4)}`;
+      userId = `usr_demo_${acc.memberNumber}`;
       await db.insert(user).values({
         id: userId,
         name: acc.name,
@@ -166,7 +218,7 @@ export async function seedInitialData() {
       });
 
       await db.insert(account).values({
-        id: `acc_demo_${acc.phone.slice(-4)}`,
+        id: `acc_demo_${acc.memberNumber}`,
         accountId: userId,
         providerId: 'credential',
         userId,
@@ -175,8 +227,31 @@ export async function seedInitialData() {
     }
 
     if (userId) {
-      // Update data telepon
-      await db.update(user).set({ phone: acc.phone }).where(eq(user.id, userId));
+      // Update data telepon & nama
+      await db
+        .update(user)
+        .set({ phone: acc.phone, name: acc.name })
+        .where(eq(user.id, userId));
+
+      // Pastikan kredensial password terpasang
+      const existingAccount = await db.query.account.findFirst({
+        where: eq(account.userId, userId),
+      });
+
+      if (existingAccount) {
+        await db
+          .update(account)
+          .set({ password: acc.password })
+          .where(eq(account.id, existingAccount.id));
+      } else {
+        await db.insert(account).values({
+          id: `acc_demo_${acc.memberNumber}`,
+          accountId: userId,
+          providerId: 'credential',
+          userId,
+          password: acc.password,
+        });
+      }
 
       // Cari ID role
       const roleRecord = await db.query.roles.findFirst({
@@ -195,7 +270,7 @@ export async function seedInitialData() {
           .onConflictDoNothing();
       }
 
-      // Buat entri profil keanggotaan
+      // Buat atau perbarui entri profil keanggotaan
       const existingMember = await db.query.members.findFirst({
         where: eq(members.userId, userId),
       });
@@ -204,11 +279,21 @@ export async function seedInitialData() {
         await db.insert(members).values({
           userId,
           periodId: activePeriod.id,
-          memberNumber: `ANG-${acc.phone.slice(-4)}`,
+          memberNumber: acc.memberNumber,
           positionTitle: acc.positionTitle,
           division: acc.division,
           status: 'active',
         });
+      } else {
+        await db
+          .update(members)
+          .set({
+            memberNumber: acc.memberNumber,
+            positionTitle: acc.positionTitle,
+            division: acc.division,
+            status: 'active',
+          })
+          .where(eq(members.id, existingMember.id));
       }
     }
   }

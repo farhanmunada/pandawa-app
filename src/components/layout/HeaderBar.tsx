@@ -11,12 +11,14 @@ interface HeaderBarProps {
   onOpenDrawer?: () => void;
   activePeriodName?: string;
   userName?: string;
+  userRole?: string;
 }
 
 export function HeaderBar({
   onOpenDrawer,
   activePeriodName = '2026–2028',
   userName = 'Pengurus',
+  userRole = 'Anggota Organisasi',
 }: HeaderBarProps) {
   const router = useRouter();
   const [showProfileMenu, setShowProfileMenu] = useState(false);
@@ -91,7 +93,7 @@ export function HeaderBar({
           <div className="absolute right-0 top-11 z-50 w-52 rounded-2xl bg-white p-2 shadow-xl border border-slate-100">
             <div className="border-b border-slate-100 px-3 py-2">
               <p className="text-xs font-bold text-slate-900 truncate">{displayName}</p>
-              <p className="text-[10px] text-slate-400">Akun Anggota Aktif</p>
+              <p className="text-[10px] text-slate-400 truncate">{userRole}</p>
             </div>
             <div className="mt-1 space-y-0.5">
               <Link

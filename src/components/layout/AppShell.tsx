@@ -16,7 +16,7 @@ export function AppShell({ children, userName, userRole }: AppShellProps) {
 
   return (
     <div className="flex min-h-screen flex-col bg-white text-slate-900">
-      <HeaderBar onOpenDrawer={() => setDrawerOpen(true)} userName={userName} />
+      <HeaderBar onOpenDrawer={() => setDrawerOpen(true)} userName={userName} userRole={userRole} />
       <Suspense fallback={null}>
         <MobileDrawer isOpen={drawerOpen} onClose={() => setDrawerOpen(false)} userName={userName} userRole={userRole} />
       </Suspense>

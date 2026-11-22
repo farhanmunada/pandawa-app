@@ -27,7 +27,12 @@ interface MobileDrawerProps {
   userRole?: string;
 }
 
-export function MobileDrawer({ isOpen, onClose, userName = 'Pengurus' }: MobileDrawerProps) {
+export function MobileDrawer({
+  isOpen,
+  onClose,
+  userName = 'Pengurus',
+  userRole = 'Pengurus Aktif',
+}: MobileDrawerProps) {
   const pathname = usePathname();
   const router = useRouter();
 
@@ -106,7 +111,7 @@ export function MobileDrawer({ isOpen, onClose, userName = 'Pengurus' }: MobileD
         {/* Info Pengguna Aktif */}
         <div className="bg-slate-50/70 px-5 py-3.5">
           <p className="text-xs font-bold text-slate-900 truncate">{userName}</p>
-          <p className="text-[10px] text-slate-400">Pengurus Aktif</p>
+          <p className="text-[10px] text-slate-400 truncate">{userRole || 'Pengurus Aktif'}</p>
         </div>
 
         {/* Menu Navigation List */}

