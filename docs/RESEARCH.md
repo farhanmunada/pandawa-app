@@ -98,6 +98,46 @@ Berdasarkan analisis visual aset logo organisasi (`public/logo.png`) dan riset i
   1. **Base White (`#FFFFFF`):** Latar belakang utama, panel kartu, modal sheet yang bersih dan modern.
   2. **Brand Accent Gold (`#D8AC41` & `#B4821E` untuk teks):** Lambang identitas logo, penanda tab aktif, badge premium, dan ring fokus.
   3. **High-Contrast Obsidian Slate (`#0F172A`):** Tipografi judul, tombol aksi utama, dan kontras navigasi Swiss.
+
+---
+
+## 6. Audit & Analisis Kepatuhan Hak Akses RBAC (PRD vs Kenyataan Kode)
+
+### 6.1 Status Kepatuhan: SALAH / BELUM SESUAI (Kebocoran Akses)
+Berdasarkan audit menyeluruh terhadap `docs/PRD.md` Bagian 2.2 dibandingkan dengan implementasi kode saat ini, sistem mengalami **kebocoran hak akses (over-privileged access)** pada role `anggota_aktif`. Anggota biasa saat ini dapat melihat dan memicu menu/fitur yang secara tegas dibatasi hanya untuk BPH dan divisi spesifik.
+
+### 6.2 Titik Kebocoran Hak Akses di Kode
+1. **Navigasi Global (`Sidebar.tsx`, `MobileDrawer.tsx`):**
+   * *Masalah:* Array navigasi (`menuGroups`) bersifat statis. Seluruh 9 tautan (termasuk *Jejak Audit*, *Data Anggota & Jabatan*, *Broadcast Sounding*, *Arus Kas Multi-Wallet*) dirender tanpa memeriksa `userRoles`.
+   * *Dampak:* Anggota aktif melihat menu manajemen yang seharusnya tersembunyi.
+2. **Dashboard Overview (`src/app/page.tsx` & `queries.ts`):**
+   * *Masalah:* Ringkasan persuratan (`LetterSummaryCard`) dan laporan pengaduan (`IncidentSummaryCard`) dirender ke semua pengguna. Pada `getDashboardAggregates()`, query database mengambil seluruh rekaman insiden tanpa memfilter flag `isConfidential = true`.
+   * *Dampak:* Anggota aktif dapat membaca judul/eksistensi laporan rahasia yang seharusnya hanya dibaca oleh pelapor, Divisi Keamanan, dan Ketua Umum.
+3. **Proteksi Halaman (Route Level Protection):**
+   * *Masalah:* Halaman `/audit`, `/internal/members`, `/events/sounding`, dan `/finance` tidak melakukan verifikasi peran pengguna sebelum merender antarmuka.
+   * *Dampak:* Anggota aktif dapat membuka langsung URL halaman tersebut dan melihat tombol operasional CRUD.
+4. **Proteksi Aksi Server (Server Actions):**
+   * *Masalah:* Fungsi mutasi (seperti tambah anggota, edit jabatan, tambah transaksi kas, input acara, pengembalian aset) belum memanggil `assertPermission` dari `src/lib/auth/guard.ts`.
+   * *Dampak:* Permintaan mutasi dari klien anggota dapat dieksekusi tanpa penolakan otoritas.
+
+### 6.3 Matriks Evaluasi Hak Akses (PRD vs Realitas)
+| Modul / Fitur | Hak Akses PRD (Anggota Aktif) | Kondisi Kode Saat Ini | Status Kepatuhan |
+| :--- | :--- | :--- | :--- |
+| **Jejak Audit Sistem** | `-` (Dilarang, hanya Ketua & Wakil) | Terbuka di sidebar & halaman `/audit` | **SALAH (Bocor)** |
+| **Data Anggota & Jabatan**| `R` (Hanya profil sendiri) | Terbuka di sidebar, CRUD `/internal/members` aktif | **SALAH (Bocor)** |
+| **Broadcast Sounding** | `-` (Hanya Divisi Humas) | Terbuka di sidebar & halaman `/events/sounding` | **SALAH (Bocor)** |
+| **Arus Kas Multi-Wallet** | `R` (Hanya ringkasan/summary) | Terbuka di sidebar & form transaksi `/finance` | **SALAH (Bocor)** |
+| **Persuratan Resmi** | `R` (Hanya surat publik) | Muncul di dashboard, modal draf surat keluar aktif | **SALAH (Bocor)** |
+| **Laporan Rahasia** | `R` (Hanya milik sendiri / pelapor) | Muncul di ringkasan dashboard tanpa filter | **SALAH (Bocor)** |
+| **Kalender Agenda** | `R` (Sinkron agenda kegiatan) | Tombol buat agenda terbuka di antarmuka | **SALAH (Bocor)** |
+| **Inventaris Aset** | Pinjam (Tarif internal / Harga Dalam) | Opsi form sewa komersial & pengembalian aktif | **SALAH (Bocor)** |
+
+### 6.4 Rencana Perbaikan (Remediasi)
+1. **Filter Navigasi Berbasis Role:** Kirim `roles` ke `AppShell` -> `Sidebar` & `MobileDrawer` untuk menyaring grup menu sesuai `PERMISSIONS`.
+2. **Page Guarding:** Tambahkan validasi otorisasi di tingkat Server Component tiap halaman dengan redirect ke `/` jika peran tidak memenuhi syarat.
+3. **Penyaringan Dashboard:** Filter `recentIncidents` pada dashboard berdasarkan kepemilikan laporan / peran keamanan.
+4. **Server Action Guarding:** Pasang `assertPermission` pada seluruh operasi mutasi data sensitif.
+
   4. **Subtle Slate (`#64748B` / `#E2E8F0`):** Garis tepi 1px minimalis dan teks sekunder.
 
 ### 5.2 Standar Antarmuka Modern

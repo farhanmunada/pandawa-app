@@ -10,6 +10,20 @@ import {
 } from '@/lib/db/schema';
 import { eq, desc } from 'drizzle-orm';
 import { revalidatePath } from 'next/cache';
+import { getCurrentUserSession } from '@/lib/auth/guard';
+
+async function checkEventPermission() {
+  const session = await getCurrentUserSession();
+  if (!session?.user) return false;
+  const roles = session.roles || [];
+  return (
+    roles.includes('super_admin') ||
+    roles.includes('ketua_umum') ||
+    roles.includes('wakil_ketua') ||
+    roles.includes('divisi_acara') ||
+    roles.includes('divisi_humas')
+  );
+}
 
 export async function getEventsList() {
   try {
@@ -54,9 +68,16 @@ export async function createEventAction(data: {
   hasSpecialDues: boolean;
   targetDuesPerMember?: number;
   duesDueDate?: string;
-  picUserId: string;
+  picUserId?: string;
 }) {
   try {
+    if (!(await checkEventPermission())) {
+      return {
+        success: false,
+        message: 'FORBIDDEN: Hanya Divisi Acara, Humas, atau Pimpinan yang dapat menjadwalkan agenda.',
+      };
+    }
+
     const activePeriod = await db.query.periods.findFirst({
       where: eq(periods.isActive, true),
     });
@@ -76,8 +97,8 @@ export async function createEventAction(data: {
         kasAllocation: data.kasAllocation,
         externalSponsorAmount: data.externalSponsorAmount,
         hasSpecialDues: data.hasSpecialDues,
-        picUserId: data.picUserId,
-        createdBy: data.picUserId,
+        picUserId: data.picUserId || 'usr_demo_0000',
+        createdBy: data.picUserId || 'usr_demo_0000',
       })
       .returning({ id: events.id });
 
@@ -105,6 +126,19 @@ export async function createEventAction(data: {
 
 export async function getEventSoundingData(eventId: number) {
   try {
+    const session = await getCurrentUserSession();
+    const roles = session?.roles || [];
+    const isAllowed = roles.some((r) =>
+      ['super_admin', 'ketua_umum', 'wakil_ketua', 'divisi_humas'].includes(r)
+    );
+    if (!isAllowed) {
+      return {
+        success: false,
+        data: null,
+        message: 'FORBIDDEN: Hanya Divisi Humas dan Pimpinan yang dapat mengakses draf sounding.',
+      };
+    }
+
     const event = await db.query.events.findFirst({
       where: eq(events.id, eventId),
     });

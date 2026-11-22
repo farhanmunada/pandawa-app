@@ -15,6 +15,7 @@ interface CreateLoanModalProps {
   onClose: () => void;
   assetsList: AssetItem[];
   onSuccess: () => void;
+  canRentExternal?: boolean;
 }
 
 export function CreateLoanModal({
@@ -22,6 +23,7 @@ export function CreateLoanModal({
   onClose,
   assetsList,
   onSuccess,
+  canRentExternal = true,
 }: CreateLoanModalProps) {
   const [selectedAssetId, setSelectedAssetId] = useState<string>(
     assetsList.length > 0 ? String(assetsList[0].id) : ''
@@ -114,14 +116,24 @@ export function CreateLoanModal({
 
           <div>
             <label className="block text-xs font-semibold text-slate-800">Skema Tarif Klien</label>
-            <select
-              value={clientTier}
-              onChange={(e) => setClientTier(e.target.value as 'INTERNAL' | 'EXTERNAL')}
-              className="mt-1.5 w-full rounded-2xl bg-slate-50 px-4 py-2.5 text-xs text-slate-900 focus:bg-white focus:ring-2 focus:ring-[#D8AC41]/40 outline-none"
-            >
-              <option value="INTERNAL">Harga Dalam (Warga Dusun / Anggota)</option>
-              <option value="EXTERNAL">Harga Luar (Pihak Luar / Komersial Masuk Kas)</option>
-            </select>
+            {canRentExternal ? (
+              <select
+                value={clientTier}
+                onChange={(e) => setClientTier(e.target.value as 'INTERNAL' | 'EXTERNAL')}
+                className="mt-1.5 w-full rounded-2xl bg-slate-50 px-4 py-2.5 text-xs text-slate-900 focus:bg-white focus:ring-2 focus:ring-[#D8AC41]/40 outline-none"
+              >
+                <option value="INTERNAL">Harga Dalam (Warga Dusun / Anggota)</option>
+                <option value="EXTERNAL">Harga Luar (Pihak Luar / Komersial Masuk Kas)</option>
+              </select>
+            ) : (
+              <select
+                value="INTERNAL"
+                disabled
+                className="mt-1.5 w-full rounded-2xl bg-slate-100 px-4 py-2.5 text-xs text-slate-500 cursor-not-allowed outline-none"
+              >
+                <option value="INTERNAL">Harga Dalam (Warga Dusun / Anggota - Subsidi)</option>
+              </select>
+            )}
           </div>
 
           <div className="grid grid-cols-2 gap-3">

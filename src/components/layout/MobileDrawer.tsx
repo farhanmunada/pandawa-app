@@ -25,6 +25,7 @@ interface MobileDrawerProps {
   onClose: () => void;
   userName?: string;
   userRole?: string;
+  userRoles?: string[];
 }
 
 export function MobileDrawer({
@@ -32,39 +33,93 @@ export function MobileDrawer({
   onClose,
   userName = 'Pengurus',
   userRole = 'Pengurus Aktif',
+  userRoles = [],
 }: MobileDrawerProps) {
   const pathname = usePathname();
   const router = useRouter();
 
-  const menuGroups = [
+  const isSuperAdmin = userRoles.includes('super_admin');
+  const isLeader =
+    isSuperAdmin || userRoles.includes('ketua_umum') || userRoles.includes('wakil_ketua');
+  const isSecretary = isSuperAdmin || userRoles.includes('sekretaris');
+  const isFinance = isSuperAdmin || userRoles.includes('bendahara');
+  const isHumas = isSuperAdmin || userRoles.includes('divisi_humas');
+  const isDraftRequester =
+    isSuperAdmin ||
+    isSecretary ||
+    isLeader ||
+    userRoles.some((r) =>
+      ['divisi_acara', 'divisi_humas', 'divisi_logistik', 'divisi_keamanan', 'bendahara'].includes(
+        r
+      )
+    );
+
+  const rawMenuGroups = [
     {
       title: 'Utama',
-      items: [{ label: 'Ringkasan Data', href: '/', icon: Home }],
+      items: [{ label: 'Ringkasan Data', href: '/', icon: Home, visible: true }],
     },
     {
       title: 'Operasional',
       items: [
-        { label: 'Kalender Agenda', href: '/events', icon: Calendar },
-        { label: 'Broadcast Sounding', href: '/events/sounding', icon: Megaphone },
-        { label: 'Katalog Inventaris', href: '/inventory', icon: Package },
+        { label: 'Kalender Agenda', href: '/events', icon: Calendar, visible: true },
+        {
+          label: 'Broadcast Sounding',
+          href: '/events/sounding',
+          icon: Megaphone,
+          visible: isLeader || isHumas,
+        },
+        { label: 'Katalog Inventaris', href: '/inventory', icon: Package, visible: true },
       ],
     },
     {
       title: 'Administratif',
       items: [
-        { label: 'Arus Kas Multi-Wallet', href: '/finance', icon: Wallet },
-        { label: 'Persuratan Resmi', href: '/letters', icon: FileText },
+        {
+          label: 'Arus Kas Multi-Wallet',
+          href: '/finance',
+          icon: Wallet,
+          visible: isLeader || isFinance || isSecretary,
+        },
+        {
+          label: 'Persuratan Resmi',
+          href: '/letters',
+          icon: FileText,
+          visible: isDraftRequester,
+        },
       ],
     },
     {
       title: 'Tata Kelola',
       items: [
-        { label: 'Data Anggota & Jabatan', href: '/internal/members', icon: Users },
-        { label: 'Laporan & Keamanan', href: '/incidents', icon: ShieldAlert },
-        { label: 'Jejak Audit Aktivitas', href: '/audit', icon: ClipboardList },
+        {
+          label: 'Data Anggota & Jabatan',
+          href: '/internal/members',
+          icon: Users,
+          visible: isLeader,
+        },
+        {
+          label: 'Laporan & Keamanan',
+          href: '/incidents',
+          icon: ShieldAlert,
+          visible: true,
+        },
+        {
+          label: 'Jejak Audit Aktivitas',
+          href: '/audit',
+          icon: ClipboardList,
+          visible: isLeader,
+        },
       ],
     },
   ];
+
+  const menuGroups = rawMenuGroups
+    .map((group) => ({
+      ...group,
+      items: group.items.filter((item) => item.visible),
+    }))
+    .filter((group) => group.items.length > 0);
 
   const allHrefs = menuGroups.flatMap((g) => g.items.map((i) => i.href));
   const activeHref = allHrefs

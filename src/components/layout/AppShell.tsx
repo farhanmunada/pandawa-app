@@ -10,15 +10,16 @@ interface AppShellProps {
   children: React.ReactNode;
   userName?: string;
   userRole?: string;
+  userRoles?: string[];
 }
 
-export function AppShell({ children, userName, userRole }: AppShellProps) {
+export function AppShell({ children, userName, userRole, userRoles = [] }: AppShellProps) {
   const [drawerOpen, setDrawerOpen] = useState(false);
 
   return (
     <div className="flex min-h-screen bg-[#FAFAFA] text-slate-900">
       {/* Desktop Sidebar Berkelompok */}
-      <Sidebar userName={userName} userRole={userRole} />
+      <Sidebar userName={userName} userRole={userRole} userRoles={userRoles} />
 
       {/* Mobile Drawer */}
       <Suspense fallback={null}>
@@ -27,6 +28,7 @@ export function AppShell({ children, userName, userRole }: AppShellProps) {
           onClose={() => setDrawerOpen(false)}
           userName={userName}
           userRole={userRole}
+          userRoles={userRoles}
         />
       </Suspense>
 
@@ -45,7 +47,7 @@ export function AppShell({ children, userName, userRole }: AppShellProps) {
         </main>
 
         <Suspense fallback={null}>
-          <BottomNav />
+          <BottomNav userRoles={userRoles} />
         </Suspense>
       </div>
     </div>

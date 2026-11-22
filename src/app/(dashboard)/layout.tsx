@@ -14,9 +14,10 @@ export default async function DashboardLayout({
     (sessionData?.roles?.includes('super_admin')
       ? 'Super Administrator'
       : 'Pengurus Aktif');
+  const userRoles = sessionData?.roles || [];
 
   return (
-    <AppShell userName={userName} userRole={userRole}>
+    <AppShell userName={userName} userRole={userRole} userRoles={userRoles}>
       {children}
     </AppShell>
   );

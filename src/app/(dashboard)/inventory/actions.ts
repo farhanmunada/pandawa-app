@@ -4,6 +4,19 @@ import { db } from '@/lib/db';
 import { assets, assetLoans, wallets, cashTransactions } from '@/lib/db/schema';
 import { eq, desc } from 'drizzle-orm';
 import { revalidatePath } from 'next/cache';
+import { getCurrentUserSession } from '@/lib/auth/guard';
+
+async function checkLogisticsPermission() {
+  const session = await getCurrentUserSession();
+  if (!session?.user) return false;
+  const roles = session.roles || [];
+  return (
+    roles.includes('super_admin') ||
+    roles.includes('ketua_umum') ||
+    roles.includes('wakil_ketua') ||
+    roles.includes('divisi_logistik')
+  );
+}
 
 export async function getInventoryOverview() {
   try {
@@ -56,6 +69,13 @@ export async function createLoanOrRentalAction(data: {
   processedByUserId: string;
 }) {
   try {
+    if (data.clientTier === 'EXTERNAL' && !(await checkLogisticsPermission())) {
+      return {
+        success: false,
+        message: 'FORBIDDEN: Hanya Divisi Logistik atau Pimpinan yang dapat memproses sewa pihak luar.',
+      };
+    }
+
     const targetAsset = await db.query.assets.findFirst({
       where: eq(assets.id, data.assetId),
     });
@@ -160,6 +180,13 @@ export async function returnAssetLoanAction(data: {
   returnNotes: string;
 }) {
   try {
+    if (!(await checkLogisticsPermission())) {
+      return {
+        success: false,
+        message: 'FORBIDDEN: Hanya Divisi Logistik atau Pimpinan yang dapat memproses pengembalian barang.',
+      };
+    }
+
     const loan = await db.query.assetLoans.findFirst({
       where: eq(assetLoans.id, data.loanId),
     });

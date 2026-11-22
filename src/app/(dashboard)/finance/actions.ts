@@ -5,6 +5,19 @@ import { wallets, cashTransactions, user } from '@/lib/db/schema';
 import { eq, desc } from 'drizzle-orm';
 import { revalidatePath } from 'next/cache';
 import { uploadToDrive } from '@/lib/gdrive/client';
+import { getCurrentUserSession } from '@/lib/auth/guard';
+
+async function checkFinancePermission() {
+  const session = await getCurrentUserSession();
+  if (!session?.user) return false;
+  const roles = session.roles || [];
+  return (
+    roles.includes('super_admin') ||
+    roles.includes('ketua_umum') ||
+    roles.includes('wakil_ketua') ||
+    roles.includes('bendahara')
+  );
+}
 
 export async function getFinanceOverview() {
   try {
@@ -51,6 +64,10 @@ export async function getFinanceOverview() {
 
 export async function createTransactionAction(formData: FormData) {
   try {
+    if (!(await checkFinancePermission())) {
+      return { success: false, message: 'FORBIDDEN: Hanya Bendahara dan Pimpinan yang berwenang mencatat kas.' };
+    }
+
     const walletId = Number(formData.get('walletId'));
     const type = formData.get('type') as 'IN' | 'OUT';
     const category = formData.get('category') as string;

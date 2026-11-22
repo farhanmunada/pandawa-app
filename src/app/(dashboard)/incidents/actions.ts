@@ -5,6 +5,19 @@ import { incidents, incidentAssignees, incidentLogs } from '@/lib/db/schema';
 import { eq, desc, or, and } from 'drizzle-orm';
 import { revalidatePath } from 'next/cache';
 import { uploadToDrive } from '@/lib/gdrive/client';
+import { getCurrentUserSession } from '@/lib/auth/guard';
+
+async function checkSecurityPermission() {
+  const session = await getCurrentUserSession();
+  if (!session?.user) return false;
+  const roles = session.roles || [];
+  return (
+    roles.includes('super_admin') ||
+    roles.includes('ketua_umum') ||
+    roles.includes('wakil_ketua') ||
+    roles.includes('divisi_keamanan')
+  );
+}
 
 export async function getIncidentsList(userId: string, userRoles: string[]) {
   try {
@@ -131,6 +144,13 @@ export async function createIncidentAction(formData: FormData) {
 
 export async function assignIncidentPicAction(incidentId: number, picUserId: string) {
   try {
+    if (!(await checkSecurityPermission())) {
+      return {
+        success: false,
+        message: 'FORBIDDEN: Hanya Divisi Keamanan atau Pimpinan yang berwenang menugaskan PIC.',
+      };
+    }
+
     await db.insert(incidentAssignees).values({
       incidentId,
       assignedUserId: picUserId,
@@ -171,6 +191,13 @@ export async function addIncidentProgressLog(incidentId: number, authorUserId: s
 
 export async function resolveIncidentAction(incidentId: number) {
   try {
+    if (!(await checkSecurityPermission())) {
+      return {
+        success: false,
+        message: 'FORBIDDEN: Hanya Divisi Keamanan atau Pimpinan yang berwenang menyelesaikan insiden.',
+      };
+    }
+
     await db
       .update(incidents)
       .set({ status: 'RESOLVED' })

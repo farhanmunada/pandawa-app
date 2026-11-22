@@ -33,7 +33,16 @@ export default async function HomePage() {
   const memberTitle = member?.positionTitle || (isSuperAdmin ? 'Super Administrator' : 'Anggota');
   const memberDivision = member?.division || 'BPH';
 
-  const data = await getDashboardAggregates();
+  const data = await getDashboardAggregates(user.id, userRoles);
+
+  const canViewLetters =
+    isSecretary ||
+    isLeader ||
+    userRoles.some((r) =>
+      ['divisi_acara', 'divisi_humas', 'divisi_logistik', 'divisi_keamanan', 'bendahara'].includes(
+        r
+      )
+    );
 
   // Focal point action button configuration per role
   const focalAction = isFinance
@@ -74,7 +83,7 @@ export default async function HomePage() {
   ].filter((s) => s.visible);
 
   return (
-    <AppShell userName={user.name} userRole={memberTitle}>
+    <AppShell userName={user.name} userRole={memberTitle} userRoles={userRoles}>
       <div className="space-y-6">
         {/* Banner Profil Eksekutif Mengikuti Gaya Sign-In */}
         <div className="rounded-3xl bg-white p-6 sm:p-8 shadow-[0_12px_40px_rgba(0,0,0,0.04)]">
@@ -155,7 +164,7 @@ export default async function HomePage() {
           <AssetSummaryCard assets={data.recentAssets} />
 
           {/* Ringkasan Persuratan Resmi */}
-          <LetterSummaryCard letters={data.recentLetters} />
+          {canViewLetters && <LetterSummaryCard letters={data.recentLetters} />}
 
           {/* Ringkasan Laporan & Keamanan */}
           <IncidentSummaryCard incidents={data.recentIncidents} />

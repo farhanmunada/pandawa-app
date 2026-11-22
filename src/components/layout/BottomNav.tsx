@@ -3,19 +3,46 @@
 import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, Wallet, FileText, Package, Calendar } from 'lucide-react';
+import { Home, Wallet, FileText, Package, Calendar, ShieldAlert } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
-export function BottomNav() {
+interface BottomNavProps {
+  userRoles?: string[];
+}
+
+export function BottomNav({ userRoles = [] }: BottomNavProps) {
   const pathname = usePathname();
 
-  const navItems = [
-    { label: 'Beranda', href: '/', icon: Home },
-    { label: 'Agenda', href: '/events', icon: Calendar },
-    { label: 'Kas', href: '/finance', icon: Wallet },
-    { label: 'Surat', href: '/letters', icon: FileText },
-    { label: 'Aset', href: '/inventory', icon: Package },
+  const isSuperAdmin = userRoles.includes('super_admin');
+  const isLeader =
+    isSuperAdmin || userRoles.includes('ketua_umum') || userRoles.includes('wakil_ketua');
+  const isFinance = isSuperAdmin || userRoles.includes('bendahara');
+  const isSecretary = isSuperAdmin || userRoles.includes('sekretaris');
+  const isDraftRequester =
+    isSuperAdmin ||
+    isSecretary ||
+    isLeader ||
+    userRoles.some((r) =>
+      ['divisi_acara', 'divisi_humas', 'divisi_logistik', 'divisi_keamanan', 'bendahara'].includes(
+        r
+      )
+    );
+
+  const rawNavItems = [
+    { label: 'Beranda', href: '/', icon: Home, visible: true },
+    { label: 'Agenda', href: '/events', icon: Calendar, visible: true },
+    { label: 'Kas', href: '/finance', icon: Wallet, visible: isLeader || isFinance },
+    { label: 'Surat', href: '/letters', icon: FileText, visible: isSecretary || isDraftRequester },
+    { label: 'Aset', href: '/inventory', icon: Package, visible: true },
+    {
+      label: 'Laporan',
+      href: '/incidents',
+      icon: ShieldAlert,
+      visible: !(isLeader || isFinance),
+    },
   ];
+
+  const navItems = rawNavItems.filter((i) => i.visible).slice(0, 5);
 
   const allNavHrefs = navItems.map((item) => item.href);
   const activeHref = allNavHrefs

@@ -3,6 +3,7 @@
 import { db } from '@/lib/db';
 import { auditLogs, user } from '@/lib/db/schema';
 import { desc, eq } from 'drizzle-orm';
+import { getCurrentUserSession } from '@/lib/auth/guard';
 
 export interface AuditLogItem {
   id: number;
@@ -14,8 +15,27 @@ export interface AuditLogItem {
   userEmail: string | null;
 }
 
-export async function getAuditLogsAction(): Promise<{ success: boolean; data?: AuditLogItem[]; error?: string }> {
+export async function getAuditLogsAction(): Promise<{
+  success: boolean;
+  data?: AuditLogItem[];
+  error?: string;
+}> {
   try {
+    const session = await getCurrentUserSession();
+    if (!session?.user) {
+      return { success: false, error: 'UNAUTHORIZED: Sesi tidak valid' };
+    }
+
+    const roles = session.roles || [];
+    const isAllowed =
+      roles.includes('super_admin') ||
+      roles.includes('ketua_umum') ||
+      roles.includes('wakil_ketua');
+
+    if (!isAllowed) {
+      return { success: false, error: 'FORBIDDEN: Anda tidak memiliki akses ke jejak audit.' };
+    }
+
     const logs = await db
       .select({
         id: auditLogs.id,

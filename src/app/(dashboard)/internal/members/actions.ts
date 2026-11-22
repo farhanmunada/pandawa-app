@@ -4,6 +4,7 @@ import { db } from '@/lib/db';
 import { members, user, account, periods, auditLogs } from '@/lib/db/schema';
 import { eq, and } from 'drizzle-orm';
 import { revalidatePath } from 'next/cache';
+import { getCurrentUserSession } from '@/lib/auth/guard';
 
 export interface CreateMemberInput {
   name: string;
@@ -64,8 +65,23 @@ export async function getMembersList(divisionFilter?: string) {
   }
 }
 
+async function checkLeaderPermission() {
+  const session = await getCurrentUserSession();
+  if (!session?.user) return false;
+  const roles = session.roles || [];
+  return (
+    roles.includes('super_admin') ||
+    roles.includes('ketua_umum') ||
+    roles.includes('wakil_ketua')
+  );
+}
+
 export async function createMemberAction(input: CreateMemberInput) {
   try {
+    if (!(await checkLeaderPermission())) {
+      return { success: false, message: 'FORBIDDEN: Hanya Pimpinan dan Wakil Ketua yang berwenang.' };
+    }
+
     const activePeriod = await db.query.periods.findFirst({
       where: eq(periods.isActive, true),
     });
@@ -125,6 +141,10 @@ export async function createMemberAction(input: CreateMemberInput) {
 
 export async function updateMemberAction(input: UpdateMemberInput) {
   try {
+    if (!(await checkLeaderPermission())) {
+      return { success: false, message: 'FORBIDDEN: Hanya Pimpinan dan Wakil Ketua yang berwenang.' };
+    }
+
     const existingMember = await db.query.members.findFirst({
       where: eq(members.id, input.memberId),
     });
@@ -184,6 +204,10 @@ export async function updateMemberAction(input: UpdateMemberInput) {
 
 export async function deleteMemberAction(memberId: number) {
   try {
+    if (!(await checkLeaderPermission())) {
+      return { success: false, message: 'FORBIDDEN: Hanya Pimpinan dan Wakil Ketua yang berwenang.' };
+    }
+
     const existingMember = await db.query.members.findFirst({
       where: eq(members.id, memberId),
     });

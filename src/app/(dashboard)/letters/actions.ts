@@ -4,6 +4,33 @@ import { db } from '@/lib/db';
 import { letters, letterDispositions, periods, user } from '@/lib/db/schema';
 import { eq, desc, and, sql } from 'drizzle-orm';
 import { revalidatePath } from 'next/cache';
+import { getCurrentUserSession } from '@/lib/auth/guard';
+
+async function checkLetterRequestPermission() {
+  const session = await getCurrentUserSession();
+  if (!session?.user) return false;
+  const roles = session.roles || [];
+  const allowed = [
+    'super_admin',
+    'ketua_umum',
+    'wakil_ketua',
+    'sekretaris',
+    'divisi_acara',
+    'divisi_humas',
+    'divisi_logistik',
+    'divisi_keamanan',
+    'bendahara',
+  ];
+  return roles.some((r) => allowed.includes(r));
+}
+
+async function checkLetterApprovePermission() {
+  const session = await getCurrentUserSession();
+  if (!session?.user) return false;
+  const roles = session.roles || [];
+  const allowed = ['super_admin', 'ketua_umum', 'sekretaris'];
+  return roles.some((r) => allowed.includes(r));
+}
 
 const ROMAN_MONTHS = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X', 'XI', 'XII'];
 
@@ -111,6 +138,13 @@ export async function createOutgoingLetterDraft(data: {
   creatorUserId?: string;
 }) {
   try {
+    if (!(await checkLetterRequestPermission())) {
+      return {
+        success: false,
+        message: 'FORBIDDEN: Anda tidak memiliki izin mengajukan draf surat.',
+      };
+    }
+
     const activePeriod = await db.query.periods.findFirst({
       where: eq(periods.isActive, true),
     });
@@ -152,6 +186,13 @@ export async function createOutgoingLetterDraft(data: {
 
 export async function approveLetterAction(letterId: number) {
   try {
+    if (!(await checkLetterApprovePermission())) {
+      return {
+        success: false,
+        message: 'FORBIDDEN: Hanya Ketua Umum atau Sekretaris yang dapat mengesahkan surat.',
+      };
+    }
+
     await db
       .update(letters)
       .set({

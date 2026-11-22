@@ -1,6 +1,6 @@
 import { db } from '@/lib/db';
 import { wallets, members, assets, events, incidents, letters } from '@/lib/db/schema';
-import { eq, ne, gte, asc, desc, sum, count } from 'drizzle-orm';
+import { eq, ne, gte, asc, desc, sum, count, or, and } from 'drizzle-orm';
 
 export interface WalletSummaryItem {
   id: number;
@@ -84,7 +84,20 @@ export function formatDate(date: Date): string {
 /**
  * Mengambil ringkasan data operasional langsung dari basis data PostgreSQL.
  */
-export async function getDashboardAggregates(): Promise<DashboardAggregates> {
+export async function getDashboardAggregates(
+  userId?: string,
+  userRoles: string[] = []
+): Promise<DashboardAggregates> {
+  const isSecurityOrLeader = userRoles.some((r) =>
+    ['super_admin', 'ketua_umum', 'wakil_ketua', 'divisi_keamanan'].includes(r)
+  );
+
+  const incidentWhere = isSecurityOrLeader
+    ? undefined
+    : userId
+    ? or(eq(incidents.isConfidential, false), eq(incidents.reporterUserId, userId))
+    : eq(incidents.isConfidential, false);
+
   const [
     walletStats,
     memberStats,
@@ -119,7 +132,14 @@ export async function getDashboardAggregates(): Promise<DashboardAggregates> {
     db
       .select({ count: count() })
       .from(incidents)
-      .where(ne(incidents.status, 'RESOLVED')),
+      .where(
+        isSecurityOrLeader
+          ? ne(incidents.status, 'RESOLVED')
+          : and(
+              ne(incidents.status, 'RESOLVED'),
+              incidentWhere || eq(incidents.isConfidential, false)
+            )
+      ),
     db
       .select({ count: count() })
       .from(letters)
@@ -141,6 +161,7 @@ export async function getDashboardAggregates(): Promise<DashboardAggregates> {
       limit: 3,
     }),
     db.query.incidents.findMany({
+      where: incidentWhere,
       orderBy: [desc(incidents.createdAt)],
       limit: 3,
     }),
