@@ -32,7 +32,8 @@ export async function uploadToDrive(
   }
 
   try {
-    const rootFolderId = process.env.GOOGLE_DRIVE_ROOT_FOLDER_ID;
+    const rawRoot = process.env.GOOGLE_DRIVE_ROOT_FOLDER_ID?.trim();
+    const rootFolderId = rawRoot ? rawRoot.split('?')[0].replace(/\/+$/, '') : undefined;
     let targetFolderId = rootFolderId;
 
     if (rootFolderId && subfolderName) {
