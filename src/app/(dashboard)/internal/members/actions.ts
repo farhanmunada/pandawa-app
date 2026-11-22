@@ -1,7 +1,7 @@
 'use server';
 
 import { db } from '@/lib/db';
-import { members, user, periods } from '@/lib/db/schema';
+import { members, user, periods, auditLogs } from '@/lib/db/schema';
 import { eq, and } from 'drizzle-orm';
 import { revalidatePath } from 'next/cache';
 
@@ -11,6 +11,17 @@ export interface CreateMemberInput {
   phone: string;
   positionTitle: string;
   division: string;
+  memberNumber?: string;
+}
+
+export interface UpdateMemberInput {
+  memberId: number;
+  name: string;
+  email: string;
+  phone: string;
+  positionTitle: string;
+  division: string;
+  status: string;
   memberNumber?: string;
 }
 
@@ -74,18 +85,105 @@ export async function createMemberAction(input: CreateMemberInput) {
     });
 
     // 2. Simpan member
-    await db.insert(members).values({
-      userId,
-      periodId: activePeriod.id,
-      memberNumber: input.memberNumber || `ANG-${Date.now().toString().slice(-4)}`,
-      positionTitle: input.positionTitle,
-      division: input.division,
-      status: 'active',
+    const [newMember] = await db
+      .insert(members)
+      .values({
+        userId,
+        periodId: activePeriod.id,
+        memberNumber: input.memberNumber || `ANG-${Date.now().toString().slice(-4)}`,
+        positionTitle: input.positionTitle,
+        division: input.division,
+        status: 'active',
+      })
+      .returning({ id: members.id });
+
+    // 3. Catat jejak audit
+    await db.insert(auditLogs).values({
+      action: 'CREATE_MEMBER',
+      targetTable: 'members',
+      recordId: String(newMember?.id || userId),
+      newData: input,
     });
 
     revalidatePath('/internal/members');
     return { success: true, message: 'Anggota berhasil ditambahkan.' };
   } catch (error: unknown) {
     return { success: false, message: error instanceof Error ? error.message : 'Gagal menambahkan anggota.' };
+  }
+}
+
+export async function updateMemberAction(input: UpdateMemberInput) {
+  try {
+    const existingMember = await db.query.members.findFirst({
+      where: eq(members.id, input.memberId),
+    });
+
+    if (!existingMember) {
+      return { success: false, message: 'Data anggota tidak ditemukan.' };
+    }
+
+    // 1. Perbarui data user
+    await db
+      .update(user)
+      .set({
+        name: input.name,
+        email: input.email,
+        phone: input.phone,
+        updatedAt: new Date(),
+      })
+      .where(eq(user.id, existingMember.userId));
+
+    // 2. Perbarui data member
+    await db
+      .update(members)
+      .set({
+        positionTitle: input.positionTitle,
+        division: input.division,
+        status: input.status,
+        memberNumber: input.memberNumber || existingMember.memberNumber,
+      })
+      .where(eq(members.id, input.memberId));
+
+    // 3. Catat jejak audit
+    await db.insert(auditLogs).values({
+      action: 'UPDATE_MEMBER',
+      targetTable: 'members',
+      recordId: String(input.memberId),
+      oldData: existingMember,
+      newData: input,
+    });
+
+    revalidatePath('/internal/members');
+    return { success: true, message: 'Data anggota berhasil diperbarui.' };
+  } catch (error: unknown) {
+    return { success: false, message: error instanceof Error ? error.message : 'Gagal memperbarui data anggota.' };
+  }
+}
+
+export async function deleteMemberAction(memberId: number) {
+  try {
+    const existingMember = await db.query.members.findFirst({
+      where: eq(members.id, memberId),
+    });
+
+    if (!existingMember) {
+      return { success: false, message: 'Data anggota tidak ditemukan.' };
+    }
+
+    // 1. Hapus record member
+    await db.delete(members).where(eq(members.id, memberId));
+
+    // 2. Catat jejak audit
+    await db.insert(auditLogs).values({
+      action: 'DELETE_MEMBER',
+      targetTable: 'members',
+      recordId: String(memberId),
+      oldData: existingMember,
+    });
+
+    revalidatePath('/internal/members');
+    return { success: true, message: 'Anggota berhasil dihapus dari sistem.' };
+  } catch (error: unknown) {
+    return { success: false, message: error instanceof Error ? error.message : 'Gagal menghapus anggota.' };
   }
 }
