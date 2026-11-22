@@ -1,49 +1,31 @@
-# Panduan Konfigurasi Variabel Lingkungan (.env) & Better Auth Dashboard
+# Panduan Konfigurasi Variabel Lingkungan (.env)
 
-## 1. Penjelasan Variabel Lingkungan
-Buat berkas `.env.local` di root proyek (`D:\Coding\pandawa-app\.env.local`) dan isi dengan konfigurasi berikut:
+Sistem telah beralih penuh ke autentikasi internal mandiri (Nomor Anggota & Kata Sandi) berbasis sesi HTTP-only cookie di PostgreSQL. Seluruh variabel Better Auth telah dihapus.
+
+---
+
+## 1. Variabel Lingkungan Aktif
+
+Isi berkas `.env.local` di root proyek Anda (`D:\Coding\pandawa-app\.env.local`) hanya memerlukan variabel berikut:
 
 ```env
-# 1. Database Neon
+# 1. Database Neon (PostgreSQL Serverless)
 DATABASE_URL=postgresql://username:password@ep-xxxx-pooler.us-east-2.aws.neon.tech/pandawadb?sslmode=require
 
-# 2. Better Auth
-BETTER_AUTH_SECRET=buat_random_secret_32_karakter
-BETTER_AUTH_URL=http://localhost:3000
-BETTER_AUTH_API_KEY=ba_v0k2ujpl19uwtoiqth893uc39mw8hh7q
-
+# 2. Public App URL
 NEXT_PUBLIC_APP_URL=http://localhost:3000
 
-# 3. Google Drive API (Untuk Fase berikutnya)
-GOOGLE_CLIENT_ID=
-GOOGLE_CLIENT_SECRET=
-GOOGLE_REFRESH_TOKEN=
-GOOGLE_DRIVE_ROOT_FOLDER_ID=
+# 3. Google Drive API (Penyimpanan Berkas Organisasi)
+GOOGLE_CLIENT_ID=ganti_dengan_google_oauth_client_id
+GOOGLE_CLIENT_SECRET=ganti_dengan_google_oauth_client_secret
+GOOGLE_REFRESH_TOKEN=ganti_dengan_google_oauth_refresh_token
+GOOGLE_DRIVE_ROOT_FOLDER_ID=ganti_dengan_root_drive_folder_id
 ```
 
 ---
 
-## 2. Di mana Posisi BETTER_AUTH_URL dan Apa Fungsinya?
-* **Di mana diletakkan?** Di dalam file `.env.local` pada baris: `BETTER_AUTH_URL=http://localhost:3000`.
-* **Apa fungsinya?** Memberitahu Better Auth di mana server aplikasi Anda berada (origin URL) agar pengalihan cookie sesi, verifikasi callback, dan CORS berjalan aman.
-
----
-
-## 3. Cara Menghubungkan ke Better Auth Cloud Dashboard
-
-Pada form **"Hubungkan Aplikasi Anda"** di dasbor Better Auth Cloud:
-1. **URL tempat aplikasi Anda diunggah:**
-   * **Saat di Localhost:** Karena server dasbor Better Auth berada di cloud publik, mereka tidak dapat langsung menembus `http://localhost:3000` di laptop Anda. Maka Anda perlu menjalankan tunnel di terminal:
-     ```bash
-     npx ngrok http 3000
-     ```
-     atau
-     ```bash
-     cloudflared tunnel --url localhost:3000
-     ```
-     Lalu **salin URL https hasil tunnel tersebut** (misal: `https://abcd-1234.ngrok-free.app`) dan tempelkan ke kolom form tersebut.
-   * **Saat sudah di Vercel (Produksi):** Masukkan domain produksi Anda (misal: `https://pandawa-app.vercel.app`).
-2. **Jalur menuju API Better Auth Anda:**
-   * Tetap gunakan nilai bawaan: `/api/auth` (karena rute handler telah kami buat di `src/app/api/auth/[...all]/route.ts`).
-3. **Header kustom:**
-   * Kosongkan saja (opsional).
+## 2. Variabel yang Sudah Dihapus (Boleh Dihapus dari .env.local Anda)
+Variabel berikut sudah **tidak digunakan** dan aman untuk dihapus:
+* `BETTER_AUTH_SECRET`
+* `BETTER_AUTH_URL`
+* `BETTER_AUTH_API_KEY`
