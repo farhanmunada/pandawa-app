@@ -145,3 +145,84 @@ Berdasarkan audit menyeluruh terhadap `docs/PRD.md` Bagian 2.2 dibandingkan deng
 * **Larangan Penggunaan Emoticon (Zero Emojis):** Seluruh antarmuka dilarang menggunakan karakter emotikon/emoji teks. Seluruh representasi visual murni menggunakan ikon vektor SVG seragam (`lucide-react`) dengan ukuran standar (16px / 20px) dan stroke 1.5–2px.
 * **Aksesibilitas & Feedback:** Setiap elemen interaktif memiliki `cursor-pointer`, transisi hover halus (150–200ms), kontras teks minimal 4.5:1, dan area sentuh mobile minimal 44x44px.
 
+---
+
+## 7. Riset Alur Kolaborasi Antar-Role & Pemisahan Ruang Kerja
+
+Berdasarkan tinjauan operasional lapangan kepemudaan, sistem memerlukan pemisahan tegas antara antarmuka transparansi publik anggota dengan meja kerja operasional divisi, serta otomatisasi alur kerja terintegrasi antar-role:
+
+### 7.1 Pemisahan Menu Umum vs Meja Kerja Khusus Divisi
+
+1. **Menu Umum (Dapat Diakses Seluruh Anggota):**
+   * **Dashboard Utama (`/`)**: Pusat transparansi (ringkasan kas organisasi, kalender acara terdekat, status Kas Selapanan anggota login, barang siap pinjam, dan forum pengaduan).
+   * **Kalender & Informasi Acara (`/events`)**: Anggota melihat detail kegiatan, lokasi, kepanitiaan, dan format siaran sounding.
+   * **Peminjaman Inventaris Anggota (`/inventory`)**: Anggota hanya melihat katalog barang dan mengajukan peminjaman dengan tarif subsidi internal (Harga Dalam).
+   * **Aspirasi & Laporan (`/incidents`)**: Saluran anggota menyampaikan aspirasi publik atau insiden rahasia.
+
+2. **Meja Kerja Khusus Divisi (Restricted Workspace):**
+   * **Ketua Umum & Wakil:** Pusat Persetujuan (*Approval Hub*) pengeluaran kas > Rp500.000, pengesahan surat resmi, dan log audit.
+   * **Sekretaris:** Modul Persuratan, penerbitan nomor surat, penandatanganan Berita Acara (BAP), dan arsip dokumen PDF.
+   * **Bendahara:** Manajemen Multi-Wallet, pembukuan kas masuk/keluar, dan pengelolaan setoran Kas Selapanan wajib Rp5.000.
+   * **Divisi Logistik:** Manajemen stok aset fisik, pemrosesan sewa pihak luar (komersial), dan penerbitan Berita Acara Pengembalian.
+   * **Divisi Acara:** Perencanaan kegiatan, pengajuan persetujuan Tiga Serangkai, penunjukan delegasi bendahara acara, dan penyusunan LPJ.
+   * **Divisi Humas:** Pengelolaan siaran resmi WhatsApp Group dan publikasi kalender organisasi.
+   * **Divisi Keamanan:** Penanganan insiden rahasia, mediasi lapangan, dan penunjukan PIC pengamanan.
+
+---
+
+### 7.2 Empat Alur Kolaborasi Lintas Peran (Cross-Role Workflows)
+
+```mermaid
+flowchart TD
+    subgraph "Alur 1: Pengembalian Inventaris"
+        L1["Logistik: Form Pengembalian & Biaya"] --> L2["Sistem: Generate BAP Pengembalian"]
+        L2 --> S1["Sekretaris: Verifikasi & TTD BAP"]
+        L2 --> B1["Bendahara: Otomasi Masuk Kas Usaha"]
+    end
+
+    subgraph "Alur 2: Pengajuan Acara Baru (Tiga Serangkai)"
+        A1["Sie Acara: Input Acara & RAB"] --> A2["Persetujuan Tiga Serangkai"]
+        A2 --> K1["Ketua: Izin Kegiatan"]
+        A2 --> B2["Bendahara: Alokasi Dana"]
+        A2 --> S2["Sekretaris: Nomor & Draf Surat"]
+        A2 --> H1["Humas: Tombol Sounding WA Aktif"]
+    end
+
+    subgraph "Alur 3: Delegasi Iuran Acara & LPJ"
+        A3["Sie Acara: Tunjuk PIC Dana Acara"] --> S3["Sekretaris: Surat Mandat / Tugas"]
+        S3 --> P1["PIC Dana: Buka Akses Form Iuran Acara"]
+        P1 --> LPJ["Pasca Acara: LPJ & Berita Acara Selesai"]
+        LPJ --> B3["Bendahara & Sekretaris: Rekonsiliasi Akhir"]
+    end
+
+    subgraph "Alur 4: Kas Selapanan Wajib Rp5.000"
+        BS["Bendahara: Buka Periode Selapanan"] --> CHK["Matriks Checklist Anggota Lunas"]
+        CHK --> KU["Otomasi Saldo Kas Utama +Rp5.000"]
+        CHK --> DSH["Dashboard Anggota: Status Lunas / Tunggakan"]
+    end
+```
+
+#### Alur 1: Pengembalian Inventaris (Logistik -> Persuratan -> Bendahara)
+* Saat barang dikembalikan, Divisi Logistik mencatat tanggal pengembalian, kondisi fisik barang, dan penerimaan biaya sewa/denda.
+* Sistem secara otomatis menerbitkan **Berita Acara Pengembalian (BAP)** resmi dengan nomor surat dari kesekretariatan.
+* BAP masuk ke antrean verifikasi Sekretaris, sedangkan nominal uang yang diterima otomatis tercatat sebagai mutasi kas masuk pada dompet "Kas Usaha & Sewa" milik Bendahara.
+
+#### Alur 2: Pengajuan Acara & Persetujuan Tiga Serangkai (Sie Acara -> Ketua, Bendahara, Sekretaris)
+* Sie Acara mengajukan rencana kegiatan baru beserta kebutuhan anggaran dan draf surat permohonan.
+* Pengajuan memerlukan verifikasi simultan Tiga Serangkai:
+  1. Ketua Umum menyetujui kebijakan kegiatan.
+  2. Bendahara menyetujui anggaran kas yang dialokasikan.
+  3. Sekretaris menerbitkan nomor surat resmi dan mengesahkan dokumen.
+* Begitu ketiganya menyetujui, acara berstatus `APPROVED`, surat siap didistribusikan, dan Divisi Humas dapat langsung menekan tombol broadcast untuk memformat pesan Sounding WhatsApp Group.
+
+#### Alur 3: Delegasi Bendahara Acara via Surat Tugas & LPJ (Sie Acara -> Panitia -> LPJ)
+* Jika kegiatan memungut iuran dari anggota, Sie Acara mendelegasikan 1–2 orang panitia sebagai **PIC Dana Acara** melalui Surat Tugas resmi yang disahkan Sekretaris.
+* Anggota yang ditunjuk mendapatkan hak akses mencatat setoran iuran pada acara tersebut.
+* Setelah acara usai, Sie Acara wajib menyusun **Berita Acara / Laporan Pertanggungjawaban (LPJ)** yang merinci realisasi dana masuk, pengeluaran, dan sisa saldo untuk diserahterimakan kembali ke Bendahara Umum.
+
+#### Alur 4: Kas Selapanan Wajib Rp5.000 (Bendahara <-> Seluruh Anggota)
+* Iuran rutin wajib organisasi ditetapkan sebesar **Rp5.000** per anggota setiap periode selapanan.
+* Bendahara memiliki antarmuka matriks cepat untuk mencatat pembayaran anggota dengan 1-klik lunas.
+* Setiap pencatatan otomatis menambah saldo Kas Utama Organisasi dan memperbarui kartu status iuran di dashboard pribadi anggota masing-masing.
+
+
