@@ -39,68 +39,46 @@ export function Sidebar({
   const isSecretary = isSuperAdmin || userRoles.includes('sekretaris');
   const isFinance = isSuperAdmin || userRoles.includes('bendahara');
   const isHumas = isSuperAdmin || userRoles.includes('divisi_humas');
-  const isDraftRequester =
-    isSuperAdmin ||
-    isSecretary ||
-    isLeader ||
-    userRoles.some((r) =>
-      ['divisi_acara', 'divisi_humas', 'divisi_logistik', 'divisi_keamanan', 'bendahara'].includes(
-        r
-      )
-    );
 
   const rawMenuGroups = [
     {
-      title: 'Utama',
-      items: [{ label: 'Ringkasan Data', href: '/', icon: Home, visible: true }],
+      title: 'Ruang Publik & Anggota',
+      items: [
+        { label: 'Ringkasan & Transparansi', href: '/', icon: Home, visible: true },
+        { label: 'Kalender Kegiatan', href: '/events', icon: Calendar, visible: true },
+        { label: 'Katalog Pinjam Aset', href: '/inventory', icon: Package, visible: true },
+        { label: 'Aspirasi & Pengaduan', href: '/incidents', icon: ShieldAlert, visible: true },
+      ],
     },
     {
-      title: 'Operasional',
+      title: 'Meja Kerja Pengurus',
       items: [
-        { label: 'Kalender Agenda', href: '/events', icon: Calendar, visible: true },
+        {
+          label: 'Buku Kas & Selapanan',
+          href: '/finance',
+          icon: Wallet,
+          visible: isLeader || isFinance,
+        },
+        {
+          label: 'Tata Kelola Persuratan',
+          href: '/letters',
+          icon: FileText,
+          visible: isLeader || isSecretary,
+        },
         {
           label: 'Broadcast Sounding',
           href: '/events/sounding',
           icon: Megaphone,
           visible: isLeader || isHumas,
         },
-        { label: 'Katalog Inventaris', href: '/inventory', icon: Package, visible: true },
-      ],
-    },
-    {
-      title: 'Administratif',
-      items: [
         {
-          label: 'Arus Kas Multi-Wallet',
-          href: '/finance',
-          icon: Wallet,
-          visible: isLeader || isFinance || isSecretary,
-        },
-        {
-          label: 'Persuratan Resmi',
-          href: '/letters',
-          icon: FileText,
-          visible: isDraftRequester,
-        },
-      ],
-    },
-    {
-      title: 'Tata Kelola',
-      items: [
-        {
-          label: 'Data Anggota & Jabatan',
+          label: 'Administrasi Anggota',
           href: '/internal/members',
           icon: Users,
           visible: isLeader,
         },
         {
-          label: 'Laporan & Keamanan',
-          href: '/incidents',
-          icon: ShieldAlert,
-          visible: true,
-        },
-        {
-          label: 'Jejak Audit Aktivitas',
+          label: 'Jejak Audit Sistem',
           href: '/audit',
           icon: ClipboardList,
           visible: isLeader,

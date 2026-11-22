@@ -6,6 +6,7 @@ import { TrendingUp, ArrowRight, Plus } from 'lucide-react';
 import { AppShell } from '@/components/layout/AppShell';
 import { getCurrentUserSession } from '@/lib/auth/guard';
 import { getDashboardAggregates, formatIDR, formatDate } from '@/lib/dashboard/queries';
+import { getMySelapananStatusAction } from '@/app/(dashboard)/finance/dues-actions';
 import {
   WalletSummaryCard,
   EventSummaryCard,
@@ -34,6 +35,7 @@ export default async function HomePage() {
   const memberDivision = member?.division || 'BPH';
 
   const data = await getDashboardAggregates(user.id, userRoles);
+  const mySelapanan = await getMySelapananStatusAction(user.id);
 
   const canViewLetters =
     isSecretary ||
@@ -46,7 +48,7 @@ export default async function HomePage() {
 
   // Focal point action button configuration per role
   const focalAction = isFinance
-    ? { label: 'Catat Kas Masuk / Keluar', href: '/finance' }
+    ? { label: 'Catat Kas & Selapanan', href: '/finance' }
     : isSecretary
     ? { label: 'Buat Draf Surat Resmi', href: '/letters' }
     : isLogistics
@@ -60,7 +62,15 @@ export default async function HomePage() {
       label: 'Saldo Kas Organisasi',
       value: formatIDR(data.totalKas),
       meta: `${data.activeWallets} Pos Dompet Aktif`,
-      visible: isFinance || isLeader,
+      visible: true,
+    },
+    {
+      label: 'Kas Selapanan Saya',
+      value: mySelapanan.hasPaid ? 'Lunas (Rp 5.000)' : 'Belum Setor',
+      meta: mySelapanan.hasPaid
+        ? `Terbayar (${mySelapanan.periodLabel})`
+        : `Tunggakan: Rp 5.000 (${mySelapanan.periodLabel})`,
+      visible: true,
     },
     {
       label: 'Basis Anggota Aktif',
@@ -152,10 +162,8 @@ export default async function HomePage() {
 
         {/* Ringkasan Data Operasional Nyata */}
         <div className="grid gap-6 lg:grid-cols-2">
-          {/* Ringkasan Kas & Dompet */}
-          {(isFinance || isLeader) && (
-            <WalletSummaryCard wallets={data.walletsList} totalKas={data.totalKas} />
-          )}
+          {/* Ringkasan Transparansi Kas & Dompet (Terbuka untuk Seluruh Anggota) */}
+          <WalletSummaryCard wallets={data.walletsList} totalKas={data.totalKas} />
 
           {/* Ringkasan Agenda Terdekat */}
           <EventSummaryCard events={data.upcomingEvents} />

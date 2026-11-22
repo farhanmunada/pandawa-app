@@ -9,8 +9,7 @@ export default async function FinancePage() {
     roles.includes('super_admin') ||
     roles.includes('ketua_umum') ||
     roles.includes('wakil_ketua') ||
-    roles.includes('bendahara') ||
-    roles.includes('sekretaris');
+    roles.includes('bendahara');
 
   if (!isAllowed) {
     redirect('/');

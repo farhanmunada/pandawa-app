@@ -65,8 +65,8 @@
 - [x] SEC-02 & DATA-01: Hapus mock ID peninggalan pada modul events, inventory, dan letters serta fallback dompet kas sewa <!-- id: 6.5 -->
 
 ## Phase 7: Arsitektur Kolaborasi Antar-Role & Kas Selapanan (PRD & Refactor)
-- [ ] Pemisahan Menu Navigasi: Menu Umum (Dashboard, Kalender Acara, Katalog Pinjam, Forum) vs Meja Kerja Khusus Divisi (Persetujuan, Persuratan, Buku Kas, Kelola Aset, Penanganan Insiden) <!-- id: 7.1 -->
-- [ ] Kas Selapanan Wajib Rp5.000: Server action, matriks 1-klik Bendahara, otomasi saldo Kas Utama, dan kartu status iuran di dashboard anggota <!-- id: 7.2 -->
+- [x] Pemisahan Menu Navigasi: Menu Umum (Dashboard, Kalender Acara, Katalog Pinjam, Forum) vs Meja Kerja Khusus Divisi (Persetujuan, Persuratan, Buku Kas, Kelola Aset, Penanganan Insiden) <!-- id: 7.1 -->
+- [x] Kas Selapanan Wajib Rp5.000: Server action, matriks 1-klik Bendahara, otomasi saldo Kas Utama, dan kartu status iuran di dashboard anggota <!-- id: 7.2 -->
 - [ ] Alur 1 (Logistik -> Surat -> Kas): Form pengembalian inventaris otomatis menerbitkan Berita Acara Pengembalian (BAP) ke Sekretaris dan mutasi sewa/denda ke Kas Usaha Bendahara <!-- id: 7.3 -->
 - [ ] Alur 2 (Sie Acara -> Tiga Serangkai -> Humas): Pengajuan agenda baru dengan RAB & draf surat, verifikasi simultan (Ketua Umum, Bendahara, Sekretaris), serta aktivasi tombol Sounding WA Grup <!-- id: 7.4 -->
 - [ ] Alur 3 (Delegasi Acara & LPJ): Penunjukan PIC Dana Acara lewat Surat Tugas resmi dari Sekretaris, pencatatan iuran khusus acara, dan formulir Berita Acara LPJ pasca acara <!-- id: 7.5 -->
