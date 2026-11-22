@@ -84,6 +84,13 @@ export async function createEventAction(data: {
 
     if (!activePeriod) return { success: false, message: 'Tidak ada periode aktif.' };
 
+    const session = await getCurrentUserSession();
+    const effectiveUserId =
+      session?.user?.id ||
+      (data.picUserId && data.picUserId !== 'Wwj2K1c6qWEvYDpWPqJrX3qbhMwg0Mj8'
+        ? data.picUserId
+        : 'usr_demo_0000');
+
     const insertedEvent = await db
       .insert(events)
       .values({
@@ -97,8 +104,8 @@ export async function createEventAction(data: {
         kasAllocation: data.kasAllocation,
         externalSponsorAmount: data.externalSponsorAmount,
         hasSpecialDues: data.hasSpecialDues,
-        picUserId: data.picUserId || 'usr_demo_0000',
-        createdBy: data.picUserId || 'usr_demo_0000',
+        picUserId: effectiveUserId,
+        createdBy: effectiveUserId,
       })
       .returning({ id: events.id });
 

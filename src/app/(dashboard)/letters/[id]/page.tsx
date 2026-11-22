@@ -107,7 +107,7 @@ function LetterDetailInner({ letterId }: { letterId: number }) {
             <p className="font-semibold">Hormat kami,</p>
             <p className="text-slate-500">Sekretaris Organisasi</p>
             <div className="my-6">
-              {letter.status === 'PUBLISHED' ? (
+              {letter.status === 'APPROVED' || letter.status === 'PUBLISHED' ? (
                 <div className="inline-block rounded border border-[#D8AC41]/50 bg-[#D8AC41]/10 px-3 py-1 font-serif italic text-[#B4821E]">
                   (Tertanda Secara Sah)
                 </div>
@@ -122,7 +122,7 @@ function LetterDetailInner({ letterId }: { letterId: number }) {
             <p className="font-semibold">Mengetahui,</p>
             <p className="text-slate-500">Ketua Umum Pandawa</p>
             <div className="my-6">
-              {letter.status === 'PUBLISHED' ? (
+              {letter.status === 'APPROVED' || letter.status === 'PUBLISHED' ? (
                 <div className="inline-block rounded border border-[#D8AC41]/50 bg-[#D8AC41]/10 px-3 py-1 font-serif italic text-[#B4821E]">
                   (Tertanda Secara Sah)
                 </div>

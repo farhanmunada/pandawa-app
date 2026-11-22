@@ -55,7 +55,6 @@ export function CreateLoanModal({
         startDate,
         expectedEndDate,
         purpose,
-        processedByUserId: 'Wwj2K1c6qWEvYDpWPqJrX3qbhMwg0Mj8',
       });
 
       if (res.success) {

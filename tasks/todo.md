@@ -56,3 +56,11 @@
 - [x] Agregasi data metrik KPI dinamis langsung dari database PostgreSQL (`wallets`, `members`, `assets`, `events`, `incidents`, `letters`) <!-- id: u.3 -->
 - [x] Penampilan profil (kode anggota, divisi, jabatan) murni dari database tanpa teks manual <!-- id: u.4 -->
 - [x] Desain antarmuka frameless modern, bersih, tanpa border berlebihan <!-- id: u.5 -->
+
+## Phase 6: Perbaikan Prioritas Audit FINDINGS.md
+- [x] SEC-01 & BUG-04: Hapus master password bypass dan perbaiki query nomor anggota persis/padded <!-- id: 6.1 -->
+- [x] BUG-01: Perbaiki evaluasi status surat APPROVED pada LettersView dan print dokumen <!-- id: 6.2 -->
+- [x] BUG-02 & SEC-02: Gunakan session user ID aktif pada mutasi kas dan leftJoin agar transaksi tidak hilang <!-- id: 6.3 -->
+- [x] BUG-03 & SEC-02: Hubungkan userId & userName pelapor insiden dengan sesi aktif <!-- id: 6.4 -->
+- [x] SEC-02 & DATA-01: Hapus mock ID peninggalan pada modul events, inventory, dan letters serta fallback dompet kas sewa <!-- id: 6.5 -->
+

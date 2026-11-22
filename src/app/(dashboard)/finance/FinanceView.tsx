@@ -32,7 +32,7 @@ interface TransactionItem {
   receiptDriveUrl: string | null;
   status: string;
   requiresApproval: boolean;
-  creatorName: string;
+  creatorName: string | null;
 }
 
 interface FinanceViewProps {
@@ -68,7 +68,7 @@ export function FinanceView({ userRoles = [] }: FinanceViewProps) {
 
   const handleApprove = async (transactionId: string) => {
     startTransition(async () => {
-      const res = await approveTransactionAction(transactionId, 'ketua_demo_id');
+      const res = await approveTransactionAction(transactionId);
       if (res.success) {
         loadData();
       }
@@ -201,7 +201,7 @@ export function FinanceView({ userRoles = [] }: FinanceViewProps) {
                   <div className="mt-1 flex items-center gap-3 text-[11px] text-slate-400">
                     <span>{trx.transactionDate}</span>
                     <span>&bull;</span>
-                    <span>Oleh: {trx.creatorName}</span>
+                    <span>Oleh: {trx.creatorName || 'Sistem'}</span>
                     {trx.receiptDriveUrl && (
                       <>
                         <span>&bull;</span>

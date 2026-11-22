@@ -49,7 +49,6 @@ export function CreateEventModal({
         hasSpecialDues,
         targetDuesPerMember: hasSpecialDues ? Number(targetDuesPerMember) : undefined,
         duesDueDate: hasSpecialDues ? duesDueDate : undefined,
-        picUserId: 'Wwj2K1c6qWEvYDpWPqJrX3qbhMwg0Mj8',
       });
 
       if (res.success) {

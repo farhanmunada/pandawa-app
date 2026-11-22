@@ -47,6 +47,7 @@ export async function loginWithMemberCodeAction(identifier: string, passwordInpu
       }
     } else if (!targetUserId) {
       // 2. Cek berdasarkan Nomor Anggota (Kode Angka, misal: 0001, 1001, ANG-0001)
+      const paddedId = trimmedId.padStart(4, '0');
       const matchedMember = await db
         .select({
           userId: members.userId,
@@ -57,8 +58,9 @@ export async function loginWithMemberCodeAction(identifier: string, passwordInpu
         .where(
           or(
             eq(members.memberNumber, trimmedId),
+            eq(members.memberNumber, paddedId),
             eq(members.memberNumber, `ANG-${trimmedId}`),
-            like(members.memberNumber, `%${trimmedId}%`)
+            eq(members.memberNumber, `ANG-${paddedId}`)
           )
         )
         .limit(1);
@@ -102,10 +104,7 @@ export async function loginWithMemberCodeAction(identifier: string, passwordInpu
 
     const isPasswordValid =
       accountRecord.password === trimmedPass ||
-      accountRecord.password === crypto.createHash('sha256').update(trimmedPass).digest('hex') ||
-      trimmedPass === '0000' ||
-      trimmedPass === '1234' ||
-      trimmedPass === 'Password123!';
+      accountRecord.password === crypto.createHash('sha256').update(trimmedPass).digest('hex');
 
     if (!isPasswordValid) {
       return {

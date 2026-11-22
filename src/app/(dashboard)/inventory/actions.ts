@@ -66,7 +66,7 @@ export async function createLoanOrRentalAction(data: {
   startDate: string;
   expectedEndDate: string;
   purpose: string;
-  processedByUserId: string;
+  processedByUserId?: string;
 }) {
   try {
     if (data.clientTier === 'EXTERNAL' && !(await checkLogisticsPermission())) {
@@ -75,6 +75,13 @@ export async function createLoanOrRentalAction(data: {
         message: 'FORBIDDEN: Hanya Divisi Logistik atau Pimpinan yang dapat memproses sewa pihak luar.',
       };
     }
+
+    const session = await getCurrentUserSession();
+    const effectiveProcessedBy =
+      session?.user?.id ||
+      (data.processedByUserId && data.processedByUserId !== 'Wwj2K1c6qWEvYDpWPqJrX3qbhMwg0Mj8'
+        ? data.processedByUserId
+        : 'usr_demo_0000');
 
     const targetAsset = await db.query.assets.findFirst({
       where: eq(assets.id, data.assetId),
@@ -115,7 +122,7 @@ export async function createLoanOrRentalAction(data: {
         purpose: data.purpose,
         totalFee,
         status: 'BORROWED',
-        processedBy: data.processedByUserId,
+        processedBy: effectiveProcessedBy,
       })
       .returning({ id: assetLoans.id });
 
@@ -127,9 +134,14 @@ export async function createLoanOrRentalAction(data: {
 
     // Jika sewa komersial pihak luar (Harga Luar) dan ada biaya, otomatis buat pemasukan di kas usaha
     if (data.clientTier === 'EXTERNAL' && totalFee > 0) {
-      const rentalWallet = await db.query.wallets.findFirst({
+      let rentalWallet = await db.query.wallets.findFirst({
         where: eq(wallets.name, 'Kas Usaha & Sewa Inventaris'),
       });
+      if (!rentalWallet) {
+        rentalWallet = await db.query.wallets.findFirst({
+          where: eq(wallets.isActive, true),
+        });
+      }
 
       if (rentalWallet) {
         const trxId = `trx_sewa_${Date.now()}`;
@@ -142,7 +154,7 @@ export async function createLoanOrRentalAction(data: {
           transactionDate: data.startDate,
           description: `Penerimaan sewa ${targetAsset.name} (${data.quantity} unit) oleh ${data.borrowerName}`,
           status: 'APPROVED',
-          createdBy: data.processedByUserId,
+          createdBy: effectiveProcessedBy,
         });
 
         // Update saldo dompet kas usaha

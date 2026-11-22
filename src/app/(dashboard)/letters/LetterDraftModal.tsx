@@ -48,7 +48,6 @@ export function LetterDraftModal({
         recipient,
         letterDate,
         requestedByDivision,
-        creatorUserId: 'usr_demo_0000',
       });
 
       if (res.success) {

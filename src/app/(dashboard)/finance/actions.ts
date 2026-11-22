@@ -41,7 +41,7 @@ export async function getFinanceOverview() {
       })
       .from(cashTransactions)
       .innerJoin(wallets, eq(cashTransactions.walletId, wallets.id))
-      .innerJoin(user, eq(cashTransactions.createdBy, user.id))
+      .leftJoin(user, eq(cashTransactions.createdBy, user.id))
       .orderBy(desc(cashTransactions.createdAt))
       .limit(30);
 
@@ -74,7 +74,8 @@ export async function createTransactionAction(formData: FormData) {
     const amount = Number(formData.get('amount'));
     const transactionDate = formData.get('transactionDate') as string;
     const description = formData.get('description') as string;
-    const creatorUserId = (formData.get('creatorUserId') as string) || 'system';
+    const session = await getCurrentUserSession();
+    const creatorUserId = session?.user?.id || (formData.get('creatorUserId') as string) || 'usr_demo_0000';
 
     if (!walletId || !type || !amount || !transactionDate || !description) {
       return { success: false, message: 'Harap lengkapi seluruh kolom wajib.' };
@@ -153,8 +154,11 @@ export async function createTransactionAction(formData: FormData) {
   }
 }
 
-export async function approveTransactionAction(transactionId: string, approverUserId: string) {
+export async function approveTransactionAction(transactionId: string, approverUserId?: string) {
   try {
+    const session = await getCurrentUserSession();
+    const effectiveApprover = session?.user?.id || approverUserId || 'usr_demo_0000';
+
     const trx = await db.query.cashTransactions.findFirst({
       where: eq(cashTransactions.id, transactionId),
     });
@@ -180,7 +184,7 @@ export async function approveTransactionAction(transactionId: string, approverUs
       .update(cashTransactions)
       .set({
         status: 'APPROVED',
-        approvedBy: approverUserId,
+        approvedBy: effectiveApprover,
         approvedAt: new Date(),
       })
       .where(eq(cashTransactions.id, transactionId));

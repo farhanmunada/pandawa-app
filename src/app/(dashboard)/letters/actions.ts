@@ -156,6 +156,9 @@ export async function createOutgoingLetterDraft(data: {
       data.letterDate
     );
 
+    const session = await getCurrentUserSession();
+    const effectiveCreator = session?.user?.id || data.creatorUserId || 'usr_demo_0000';
+
     await db.insert(letters).values({
       periodId: activePeriod.id,
       direction: 'OUT',
@@ -171,7 +174,7 @@ export async function createOutgoingLetterDraft(data: {
       requestedByDivision: data.requestedByDivision,
       primarySignatoryName: 'Ketua Umum Pandawa',
       secondarySignatoryName: 'Sekretaris Pandawa',
-      createdBy: data.creatorUserId || 'usr_demo_0000',
+      createdBy: effectiveCreator,
     });
 
     revalidatePath('/letters');

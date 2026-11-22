@@ -96,8 +96,9 @@ export async function createIncidentAction(formData: FormData) {
     const incidentTime = formData.get('incidentTime') as string;
     const urgency = (formData.get('urgency') as 'LOW' | 'MEDIUM' | 'HIGH' | 'EMERGENCY') || 'MEDIUM';
     const isConfidential = formData.get('isConfidential') === 'true';
-    const reporterName = formData.get('reporterName') as string;
-    const reporterUserId = (formData.get('reporterUserId') as string) || 'demo_user_id';
+    const session = await getCurrentUserSession();
+    const reporterName = session?.user?.name || (formData.get('reporterName') as string) || 'Anggota Pemuda';
+    const reporterUserId = session?.user?.id || (formData.get('reporterUserId') as string) || 'usr_demo_0000';
 
     const proofFile = formData.get('proofFile') as File | null;
     let proofDriveId: string | null = null;
@@ -173,9 +174,12 @@ export async function assignIncidentPicAction(incidentId: number, picUserId: str
 
 export async function addIncidentProgressLog(incidentId: number, authorUserId: string, actionTaken: string) {
   try {
+    const session = await getCurrentUserSession();
+    const effectiveAuthor = session?.user?.id || authorUserId || 'usr_demo_0000';
+
     await db.insert(incidentLogs).values({
       incidentId,
-      authorUserId,
+      authorUserId: effectiveAuthor,
       actionTaken,
     });
 

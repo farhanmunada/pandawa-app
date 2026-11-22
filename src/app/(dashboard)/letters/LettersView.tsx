@@ -202,7 +202,7 @@ export function LettersView({ userRoles = [] }: LettersViewProps) {
 
               <div className="flex items-center justify-between sm:justify-end gap-3 pt-2 sm:pt-0">
                 <div>
-                  {letItem.status === 'PUBLISHED' ? (
+                  {letItem.status === 'APPROVED' || letItem.status === 'PUBLISHED' ? (
                     <span className="inline-flex items-center text-[10px] font-semibold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-full">
                       <Check className="mr-1 h-3 w-3" /> Sah & Diterbitkan
                     </span>
