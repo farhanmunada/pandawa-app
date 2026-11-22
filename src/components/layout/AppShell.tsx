@@ -4,6 +4,7 @@ import React, { useState, Suspense } from 'react';
 import { HeaderBar } from './HeaderBar';
 import { BottomNav } from './BottomNav';
 import { MobileDrawer } from './MobileDrawer';
+import { Sidebar } from './Sidebar';
 
 interface AppShellProps {
   children: React.ReactNode;
@@ -15,19 +16,38 @@ export function AppShell({ children, userName, userRole }: AppShellProps) {
   const [drawerOpen, setDrawerOpen] = useState(false);
 
   return (
-    <div className="flex min-h-screen flex-col bg-white text-slate-900">
-      <HeaderBar onOpenDrawer={() => setDrawerOpen(true)} userName={userName} userRole={userRole} />
+    <div className="flex min-h-screen bg-[#FAFAFA] text-slate-900">
+      {/* Desktop Sidebar Berkelompok */}
+      <Sidebar userName={userName} userRole={userRole} />
+
+      {/* Mobile Drawer */}
       <Suspense fallback={null}>
-        <MobileDrawer isOpen={drawerOpen} onClose={() => setDrawerOpen(false)} userName={userName} userRole={userRole} />
+        <MobileDrawer
+          isOpen={drawerOpen}
+          onClose={() => setDrawerOpen(false)}
+          userName={userName}
+          userRole={userRole}
+        />
       </Suspense>
 
-      <main className="flex-1 pb-20 md:pb-10">
-        <div className="mx-auto max-w-5xl px-4 py-5 md:px-6">{children}</div>
-      </main>
+      {/* Main Content Area */}
+      <div className="flex flex-1 flex-col min-w-0">
+        <HeaderBar
+          onOpenDrawer={() => setDrawerOpen(true)}
+          userName={userName}
+          userRole={userRole}
+        />
 
-      <Suspense fallback={null}>
-        <BottomNav />
-      </Suspense>
+        <main className="flex-1 pb-20 md:pb-12">
+          <div className="mx-auto max-w-6xl px-4 py-6 md:px-8">
+            {children}
+          </div>
+        </main>
+
+        <Suspense fallback={null}>
+          <BottomNav />
+        </Suspense>
+      </div>
     </div>
   );
 }

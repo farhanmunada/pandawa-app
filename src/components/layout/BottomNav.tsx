@@ -18,7 +18,7 @@ export function BottomNav() {
   ];
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-40 flex h-16 border-t border-slate-200 bg-white/95 px-2 backdrop-blur-md md:hidden">
+    <nav className="fixed bottom-0 left-0 right-0 z-40 flex h-16 border-t border-slate-100 bg-white/95 px-2 shadow-[0_-4px_20px_rgba(0,0,0,0.03)] backdrop-blur-md md:hidden">
       <div className="mx-auto flex w-full max-w-md items-center justify-around">
         {navItems.map((item) => {
           const Icon = item.icon;
@@ -37,7 +37,7 @@ export function BottomNav() {
             >
               <div
                 className={cn(
-                  'flex h-8 w-8 items-center justify-center rounded-lg transition-colors',
+                  'flex h-8 w-8 items-center justify-center rounded-2xl transition-colors',
                   isActive ? 'bg-[#D8AC41]/15 text-[#B4821E]' : ''
                 )}
               >

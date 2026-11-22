@@ -108,7 +108,7 @@ export async function createOutgoingLetterDraft(data: {
   recipient: string;
   letterDate: string;
   requestedByDivision: string;
-  creatorUserId: string;
+  creatorUserId?: string;
 }) {
   try {
     const activePeriod = await db.query.periods.findFirst({
@@ -137,7 +137,7 @@ export async function createOutgoingLetterDraft(data: {
       requestedByDivision: data.requestedByDivision,
       primarySignatoryName: 'Ketua Umum Pandawa',
       secondarySignatoryName: 'Sekretaris Pandawa',
-      createdBy: data.creatorUserId,
+      createdBy: data.creatorUserId || 'usr_demo_0000',
     });
 
     revalidatePath('/letters');

@@ -37,19 +37,19 @@ export function HeaderBar({
   };
 
   return (
-    <header className="sticky top-0 z-30 flex h-14 w-full items-center justify-between border-b border-slate-100 bg-white/95 px-4 backdrop-blur-md">
+    <header className="sticky top-0 z-30 flex h-16 w-full items-center justify-between border-b border-slate-100/80 bg-white/95 px-4 md:px-8 backdrop-blur-md">
       <div className="flex items-center gap-3">
         <button
           type="button"
           onClick={onOpenDrawer}
-          className="flex h-9 w-9 items-center justify-center rounded-xl bg-slate-50 text-slate-700 hover:bg-slate-100 transition-colors cursor-pointer"
+          className="flex h-9 w-9 items-center justify-center rounded-2xl bg-slate-50 text-slate-700 hover:bg-slate-100 transition-colors cursor-pointer md:hidden"
           aria-label="Buka Menu"
         >
           <Menu className="h-4 w-4" />
         </button>
 
-        <Link href="/" className="flex items-center gap-2.5">
-          <div className="relative h-8 w-8 shrink-0 overflow-hidden rounded-xl bg-slate-50 p-1 shadow-2xs">
+        <Link href="/" className="flex items-center gap-2.5 md:hidden">
+          <div className="relative h-8 w-8 shrink-0 overflow-hidden rounded-2xl bg-slate-50 p-1 shadow-2xs">
             <Image
               src="/favicon.png"
               alt="Logo Pandawa"
@@ -68,6 +68,17 @@ export function HeaderBar({
             </span>
           </div>
         </Link>
+
+        {/* Desktop Header Title */}
+        <div className="hidden md:flex items-center gap-2">
+          <span className="text-xs font-semibold text-slate-500">
+            Sistem Informasi Operasional
+          </span>
+          <span className="text-slate-300">&bull;</span>
+          <span className="rounded-full bg-[#D8AC41]/15 px-2.5 py-0.5 text-[10px] font-bold text-[#B4821E]">
+            Periode {activePeriodName}
+          </span>
+        </div>
       </div>
 
       <div className="relative flex items-center gap-2">

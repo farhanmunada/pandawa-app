@@ -1,10 +1,23 @@
 import React from 'react';
 import { AppShell } from '@/components/layout/AppShell';
+import { getCurrentUserSession } from '@/lib/auth/guard';
 
-export default function DashboardLayout({
+export default async function DashboardLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  return <AppShell>{children}</AppShell>;
+  const sessionData = await getCurrentUserSession();
+  const userName = sessionData?.user?.name || 'Pengurus';
+  const userRole =
+    sessionData?.member?.positionTitle ||
+    (sessionData?.roles?.includes('super_admin')
+      ? 'Super Administrator'
+      : 'Pengurus Aktif');
+
+  return (
+    <AppShell userName={userName} userRole={userRole}>
+      {children}
+    </AppShell>
+  );
 }

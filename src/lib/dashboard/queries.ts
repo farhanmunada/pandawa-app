@@ -1,6 +1,50 @@
 import { db } from '@/lib/db';
 import { wallets, members, assets, events, incidents, letters } from '@/lib/db/schema';
-import { eq, ne, gte, asc, sum, count } from 'drizzle-orm';
+import { eq, ne, gte, asc, desc, sum, count } from 'drizzle-orm';
+
+export interface WalletSummaryItem {
+  id: number;
+  name: string;
+  currentBalance: number;
+}
+
+export interface EventSummaryItem {
+  id: number;
+  title: string;
+  location: string;
+  startTime: Date;
+  plannedBudget: number;
+  kasAllocation: number;
+  status: string;
+}
+
+export interface AssetSummaryItem {
+  id: number;
+  code: string;
+  name: string;
+  category: string;
+  availableQuantity: number;
+  totalQuantity: number;
+  internalRatePerDay: number;
+}
+
+export interface LetterSummaryItem {
+  id: number;
+  letterNumber: string;
+  subject: string;
+  letterType: string;
+  status: string;
+  letterDate: string;
+}
+
+export interface IncidentSummaryItem {
+  id: number;
+  title: string;
+  category: string;
+  urgency: string;
+  status: string;
+  incidentTime: Date;
+}
 
 export interface DashboardAggregates {
   totalKas: number;
@@ -14,6 +58,11 @@ export interface DashboardAggregates {
     title: string;
     startTime: Date;
   } | null;
+  walletsList: WalletSummaryItem[];
+  upcomingEvents: EventSummaryItem[];
+  recentAssets: AssetSummaryItem[];
+  recentLetters: LetterSummaryItem[];
+  recentIncidents: IncidentSummaryItem[];
 }
 
 export function formatIDR(amount: number): string {
@@ -33,7 +82,7 @@ export function formatDate(date: Date): string {
 }
 
 /**
- * Mengambil ringkasan data metrik langsung dari basis data PostgreSQL.
+ * Mengambil ringkasan data operasional langsung dari basis data PostgreSQL.
  */
 export async function getDashboardAggregates(): Promise<DashboardAggregates> {
   const [
@@ -43,6 +92,11 @@ export async function getDashboardAggregates(): Promise<DashboardAggregates> {
     nextEvent,
     incidentStats,
     letterStats,
+    walletItems,
+    upcomingEventsList,
+    assetsList,
+    lettersList,
+    incidentsList,
   ] = await Promise.all([
     db
       .select({ total: sum(wallets.currentBalance), count: count() })
@@ -70,6 +124,26 @@ export async function getDashboardAggregates(): Promise<DashboardAggregates> {
       .select({ count: count() })
       .from(letters)
       .where(eq(letters.status, 'SUBMITTED')),
+    db.query.wallets.findMany({
+      where: eq(wallets.isActive, true),
+      limit: 4,
+    }),
+    db.query.events.findMany({
+      where: gte(events.startTime, new Date()),
+      orderBy: [asc(events.startTime)],
+      limit: 2,
+    }),
+    db.query.assets.findMany({
+      limit: 3,
+    }),
+    db.query.letters.findMany({
+      orderBy: [desc(letters.createdAt)],
+      limit: 3,
+    }),
+    db.query.incidents.findMany({
+      orderBy: [desc(incidents.createdAt)],
+      limit: 3,
+    }),
   ]);
 
   return {
@@ -81,5 +155,44 @@ export async function getDashboardAggregates(): Promise<DashboardAggregates> {
     openIncidents: Number(incidentStats[0]?.count ?? 0),
     pendingLetters: Number(letterStats[0]?.count ?? 0),
     nextEvent: nextEvent ? { title: nextEvent.title, startTime: nextEvent.startTime } : null,
+    walletsList: walletItems.map((w) => ({
+      id: w.id,
+      name: w.name,
+      currentBalance: Number(w.currentBalance),
+    })),
+    upcomingEvents: upcomingEventsList.map((e) => ({
+      id: e.id,
+      title: e.title,
+      location: e.location,
+      startTime: e.startTime,
+      plannedBudget: Number(e.plannedBudget),
+      kasAllocation: Number(e.kasAllocation),
+      status: e.status,
+    })),
+    recentAssets: assetsList.map((a) => ({
+      id: a.id,
+      code: a.code,
+      name: a.name,
+      category: a.category,
+      availableQuantity: a.availableQuantity,
+      totalQuantity: a.totalQuantity,
+      internalRatePerDay: Number(a.internalRatePerDay),
+    })),
+    recentLetters: lettersList.map((l) => ({
+      id: l.id,
+      letterNumber: l.letterNumber,
+      subject: l.subject,
+      letterType: l.letterType,
+      status: l.status,
+      letterDate: String(l.letterDate),
+    })),
+    recentIncidents: incidentsList.map((i) => ({
+      id: i.id,
+      title: i.title,
+      category: i.category,
+      urgency: i.urgency,
+      status: i.status,
+      incidentTime: i.incidentTime,
+    })),
   };
 }

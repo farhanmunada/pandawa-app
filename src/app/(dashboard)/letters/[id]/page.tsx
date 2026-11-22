@@ -50,25 +50,25 @@ function LetterDetailInner({ letterId }: { letterId: number }) {
   return (
     <div className="space-y-6">
       {/* Top Action Bar */}
-      <div className="flex items-center justify-between border-b border-slate-200 pb-4 print:hidden">
+      <div className="flex items-center justify-between rounded-3xl bg-white p-5 shadow-[0_12px_40px_rgba(0,0,0,0.04)] print:hidden">
         <Link
           href="/letters"
           className="flex items-center gap-1.5 text-xs font-semibold text-slate-600 hover:text-slate-900 cursor-pointer"
         >
           <ArrowLeft className="h-4 w-4" />
-          Kembali ke Persuratan
+          <span>Kembali ke Persuratan</span>
         </Link>
         <button
           onClick={() => window.print()}
-          className="flex items-center gap-1.5 rounded-lg bg-slate-900 px-3.5 py-1.5 text-xs font-medium text-white hover:bg-slate-800 transition-colors cursor-pointer"
+          className="flex items-center gap-2 rounded-2xl bg-slate-900 px-5 py-2.5 text-xs font-semibold text-white hover:bg-slate-800 transition-colors cursor-pointer shadow-xs"
         >
           <Printer className="h-4 w-4 text-[#D8AC41]" />
-          Cetak Dokumen (PDF)
+          <span>Cetak Dokumen (PDF)</span>
         </button>
       </div>
 
       {/* Printable Sheet View */}
-      <div className="mx-auto max-w-3xl rounded-2xl border border-slate-200 bg-white p-8 md:p-12 shadow-sm print:m-0 print:max-w-none print:border-none print:p-0 print:shadow-none">
+      <div className="mx-auto max-w-3xl rounded-3xl bg-white p-8 md:p-12 shadow-[0_12px_40px_rgba(0,0,0,0.04)] print:m-0 print:max-w-none print:border-none print:p-0 print:shadow-none">
         {/* Kop Surat Resmi */}
         <Letterhead />
 
