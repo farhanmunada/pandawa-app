@@ -1,7 +1,7 @@
 'use server';
 
 import { db } from '@/lib/db';
-import { members, user, periods, auditLogs } from '@/lib/db/schema';
+import { members, user, account, periods, auditLogs } from '@/lib/db/schema';
 import { eq, and } from 'drizzle-orm';
 import { revalidatePath } from 'next/cache';
 
@@ -12,6 +12,7 @@ export interface CreateMemberInput {
   positionTitle: string;
   division: string;
   memberNumber?: string;
+  password?: string;
 }
 
 export interface UpdateMemberInput {
@@ -23,6 +24,7 @@ export interface UpdateMemberInput {
   division: string;
   status: string;
   memberNumber?: string;
+  password?: string;
 }
 
 export async function getMembersList(divisionFilter?: string) {
@@ -84,25 +86,34 @@ export async function createMemberAction(input: CreateMemberInput) {
       isActive: true,
     });
 
-    // 2. Simpan member
+    // 2. Simpan kredensial login (enrollment oleh Wakil Ketua)
+    await db.insert(account).values({
+      id: `acc_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
+      accountId: userId,
+      providerId: 'credential',
+      userId,
+      password: input.password || 'Pandawa123!',
+    });
+
+    // 3. Simpan member dengan nomor kode angka
     const [newMember] = await db
       .insert(members)
       .values({
         userId,
         periodId: activePeriod.id,
-        memberNumber: input.memberNumber || `ANG-${Date.now().toString().slice(-4)}`,
+        memberNumber: input.memberNumber || `1${Date.now().toString().slice(-3)}`,
         positionTitle: input.positionTitle,
         division: input.division,
         status: 'active',
       })
       .returning({ id: members.id });
 
-    // 3. Catat jejak audit
+    // 4. Catat jejak audit
     await db.insert(auditLogs).values({
       action: 'CREATE_MEMBER',
       targetTable: 'members',
       recordId: String(newMember?.id || userId),
-      newData: input,
+      newData: { ...input, memberNumber: input.memberNumber || `1${Date.now().toString().slice(-3)}` },
     });
 
     revalidatePath('/internal/members');
@@ -144,7 +155,18 @@ export async function updateMemberAction(input: UpdateMemberInput) {
       })
       .where(eq(members.id, input.memberId));
 
-    // 3. Catat jejak audit
+    // 3. Perbarui kata sandi jika diisi oleh Wakil Ketua
+    if (input.password && input.password.length >= 8) {
+      await db
+        .update(account)
+        .set({
+          password: input.password,
+          updatedAt: new Date(),
+        })
+        .where(and(eq(account.userId, existingMember.userId), eq(account.providerId, 'credential')));
+    }
+
+    // 4. Catat jejak audit
     await db.insert(auditLogs).values({
       action: 'UPDATE_MEMBER',
       targetTable: 'members',

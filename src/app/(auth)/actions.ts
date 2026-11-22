@@ -1,9 +1,65 @@
 'use server';
 
 import { db } from '@/lib/db';
-import { user, account, verification, auditLogs } from '@/lib/db/schema';
-import { eq, and, gt } from 'drizzle-orm';
+import { user, account, verification, auditLogs, members } from '@/lib/db/schema';
+import { eq, and, gt, or, like } from 'drizzle-orm';
 import crypto from 'crypto';
+
+/**
+ * Menyelesaikan kode unik angka anggota menjadi email autentikasi internal.
+ */
+export async function resolveLoginEmailAction(identifier: string) {
+  try {
+    const trimmed = identifier.trim();
+    if (!trimmed) {
+      return { success: false, message: 'Masukkan kode akses anggota atau email.' };
+    }
+
+    if (trimmed.includes('@')) {
+      return { success: true, email: trimmed.toLowerCase() };
+    }
+
+    // Cari anggota berdasarkan nomor anggota atau akhiran angka
+    const matchedMember = await db
+      .select({
+        email: user.email,
+        name: user.name,
+      })
+      .from(members)
+      .innerJoin(user, eq(members.userId, user.id))
+      .where(
+        or(
+          eq(members.memberNumber, trimmed),
+          eq(members.memberNumber, `ANG-${trimmed}`),
+          like(members.memberNumber, `%${trimmed}%`)
+        )
+      )
+      .limit(1);
+
+    if (matchedMember.length > 0 && matchedMember[0].email) {
+      return { success: true, email: matchedMember[0].email, name: matchedMember[0].name };
+    }
+
+    // Fallback: periksa kecocokan nomor telepon
+    const matchedUserByPhone = await db.query.user.findFirst({
+      where: eq(user.phone, trimmed),
+    });
+
+    if (matchedUserByPhone) {
+      return { success: true, email: matchedUserByPhone.email, name: matchedUserByPhone.name };
+    }
+
+    return {
+      success: false,
+      message: 'Kode unik anggota tidak ditemukan. Hubungi Wakil Ketua untuk pendaftaran akun.',
+    };
+  } catch (error: unknown) {
+    return {
+      success: false,
+      message: error instanceof Error ? error.message : 'Gagal memproses kode login.',
+    };
+  }
+}
 
 export async function requestPasswordResetAction(email: string) {
   try {

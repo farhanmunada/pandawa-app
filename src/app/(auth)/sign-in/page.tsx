@@ -5,11 +5,12 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { authClient } from '@/lib/auth/auth-client';
-import { Lock, Mail, ArrowRight, Loader2, AlertCircle } from 'lucide-react';
+import { resolveLoginEmailAction } from '../actions';
+import { ArrowRight, Loader2, AlertCircle } from 'lucide-react';
 
 export default function SignInPage() {
   const router = useRouter();
-  const [email, setEmail] = useState('');
+  const [identifier, setIdentifier] = useState('');
   const [password, setPassword] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
   const [isPending, startTransition] = useTransition();
@@ -20,13 +21,20 @@ export default function SignInPage() {
 
     startTransition(async () => {
       try {
+        // Resolusi kode angka anggota ke email autentikasi internal
+        const resolveRes = await resolveLoginEmailAction(identifier);
+        if (!resolveRes.success || !resolveRes.email) {
+          setErrorMessage(resolveRes.message || 'Kode akses anggota tidak dikenali.');
+          return;
+        }
+
         const { error } = await authClient.signIn.email({
-          email,
+          email: resolveRes.email,
           password,
         });
 
         if (error) {
-          setErrorMessage(error.message || 'Email atau kata sandi tidak cocok.');
+          setErrorMessage('Kata sandi tidak sesuai dengan kode anggota.');
           return;
         }
 
@@ -39,110 +47,101 @@ export default function SignInPage() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-slate-50/60 px-4 py-8">
-      <div className="w-full max-w-sm rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-        {/* Identitas Organisasi */}
+    <div className="flex min-h-screen items-center justify-center bg-[#FAFAFA] px-4 py-12">
+      <div className="w-full max-w-sm rounded-3xl bg-white p-8 sm:p-10 shadow-[0_12px_40px_rgba(0,0,0,0.04)]">
+        {/* Header Identitas Tanpa Border Menumpuk */}
         <div className="text-center">
-          <div className="mx-auto mb-3 h-12 w-12 overflow-hidden rounded-xl border border-slate-200 bg-white p-1 shadow-xs">
+          <div className="mx-auto mb-4 h-14 w-14 overflow-hidden rounded-2xl bg-slate-50 p-1.5 shadow-2xs">
             <Image
               src="/favicon.png"
               alt="Logo Pandawa"
-              width={48}
-              height={48}
+              width={56}
+              height={56}
               className="h-full w-full object-contain"
               priority
             />
           </div>
 
-          <div className="inline-flex items-center gap-1.5 rounded-full border border-[#D8AC41]/40 bg-[#D8AC41]/10 px-2.5 py-0.5 text-[10px] font-bold text-[#B4821E] uppercase tracking-wider">
-            <span>Portal Masuk</span>
-          </div>
-          <h2 className="mt-2 text-lg font-bold tracking-tight text-slate-900">
-            Masuk ke Sistem
-          </h2>
-          <p className="mt-0.5 text-xs text-slate-500">
-            Kelola administrasi dan operasional organisasi
+          <span className="inline-block rounded-full bg-[#D8AC41]/15 px-3 py-1 text-[10px] font-bold tracking-wider text-[#B4821E] uppercase">
+            Akses Internal
+          </span>
+          <h1 className="mt-2 text-xl font-bold tracking-tight text-slate-900">
+            Sistem Pandawa
+          </h1>
+          <p className="mt-1 text-xs text-slate-500">
+            Masuk menggunakan nomor akses anggota Anda
           </p>
         </div>
 
-        {/* Notifikasi Error */}
+        {/* Notifikasi Kesalahan Minimalis */}
         {errorMessage && (
-          <div className="mt-4 flex items-center gap-2 rounded-xl border border-rose-200 bg-rose-50 p-2.5 text-xs text-rose-700">
+          <div className="mt-5 flex items-center gap-2 rounded-2xl bg-rose-50/80 px-4 py-3 text-xs text-rose-700">
             <AlertCircle className="h-4 w-4 shrink-0 text-rose-600" />
             <span>{errorMessage}</span>
           </div>
         )}
 
-        {/* Form Input dengan Background Highlight */}
-        <form onSubmit={handleSignIn} className="mt-5 space-y-3">
-          <div className="rounded-xl border border-slate-200 bg-slate-50/60 p-3">
-            <label className="block text-[11px] font-semibold text-slate-700">
-              Alamat Email
+        {/* Formulir Modern Frameless */}
+        <form onSubmit={handleSignIn} className="mt-6 space-y-4">
+          <div>
+            <label className="block text-xs font-semibold text-slate-800">
+              Nomor Anggota / Kode Akses
             </label>
-            <div className="relative mt-1">
-              <Mail className="absolute left-2.5 top-2.5 h-3.5 w-3.5 text-slate-400" />
-              <input
-                type="email"
-                required
-                placeholder="nama@email.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="w-full rounded-lg border border-slate-200 bg-white py-1.5 pl-8 pr-3 text-xs text-slate-900 focus:border-[#D8AC41] focus:ring-1 focus:ring-[#D8AC41] outline-none"
-              />
-            </div>
+            <input
+              type="text"
+              required
+              placeholder="Contoh: 0001, 1001, atau email"
+              value={identifier}
+              onChange={(e) => setIdentifier(e.target.value)}
+              className="mt-1.5 w-full rounded-2xl bg-slate-50 px-4 py-3 text-sm text-slate-900 placeholder:text-slate-400 focus:bg-white focus:ring-2 focus:ring-[#D8AC41]/40 outline-none transition-all"
+            />
           </div>
 
-          <div className="rounded-xl border border-slate-200 bg-slate-50/60 p-3">
+          <div>
             <div className="flex items-center justify-between">
-              <label className="block text-[11px] font-semibold text-slate-700">
+              <label className="block text-xs font-semibold text-slate-800">
                 Kata Sandi
               </label>
               <Link
                 href="/reset-password"
-                className="text-[11px] font-semibold text-[#B4821E] hover:underline cursor-pointer"
+                className="text-xs font-medium text-[#B4821E] hover:underline cursor-pointer"
               >
                 Lupa Sandi?
               </Link>
             </div>
-            <div className="relative mt-1">
-              <Lock className="absolute left-2.5 top-2.5 h-3.5 w-3.5 text-slate-400" />
-              <input
-                type="password"
-                required
-                placeholder="Kata sandi akun"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full rounded-lg border border-slate-200 bg-white py-1.5 pl-8 pr-3 text-xs text-slate-900 focus:border-[#D8AC41] focus:ring-1 focus:ring-[#D8AC41] outline-none"
-              />
-            </div>
+            <input
+              type="password"
+              required
+              placeholder="Masukkan kata sandi"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="mt-1.5 w-full rounded-2xl bg-slate-50 px-4 py-3 text-sm text-slate-900 placeholder:text-slate-400 focus:bg-white focus:ring-2 focus:ring-[#D8AC41]/40 outline-none transition-all"
+            />
           </div>
 
           <button
             type="submit"
             disabled={isPending}
-            className="mt-2 flex w-full items-center justify-center gap-2 rounded-lg bg-slate-900 py-2.5 text-xs font-semibold text-white shadow-xs hover:bg-slate-800 transition-colors disabled:opacity-50 cursor-pointer"
+            className="mt-3 flex w-full items-center justify-center gap-2 rounded-2xl bg-slate-900 py-3 text-sm font-semibold text-white shadow-xs hover:bg-slate-800 transition-all disabled:opacity-50 cursor-pointer"
           >
             {isPending ? (
               <>
                 <Loader2 className="h-4 w-4 animate-spin text-[#D8AC41]" />
-                <span>Memproses Verifikasi...</span>
+                <span>Memverifikasi...</span>
               </>
             ) : (
               <>
                 <span>Masuk Sekarang</span>
-                <ArrowRight className="h-3.5 w-3.5 text-[#D8AC41]" />
+                <ArrowRight className="h-4 w-4 text-[#D8AC41]" />
               </>
             )}
           </button>
         </form>
 
-        {/* Footer Navigasi Pendaftaran */}
-        <div className="mt-5 border-t border-slate-100 pt-4 text-center">
-          <p className="text-xs text-slate-500">
-            Belum memiliki akun?{' '}
-            <Link href="/sign-up" className="font-semibold text-[#B4821E] hover:underline cursor-pointer">
-              Daftar akun pengurus
-            </Link>
+        {/* Catatan Hak Kelola Wakil Ketua (Tanpa Garis Pemisah Kaku) */}
+        <div className="mt-8 text-center">
+          <p className="text-[11px] text-slate-400 leading-relaxed">
+            Akun dan kode akses diterbitkan langsung oleh Wakil Ketua Organisasi.
           </p>
         </div>
       </div>
