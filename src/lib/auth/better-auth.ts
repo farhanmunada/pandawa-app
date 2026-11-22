@@ -11,6 +11,10 @@ export const auth = betterAuth({
   }),
   emailAndPassword: {
     enabled: true,
+    async sendResetPassword(data) {
+      // Log reset URL for development and audit trail
+      console.log(`[AUTH] Reset password request for ${data.user.email}: token=${data.token}`);
+    },
   },
   plugins: [
     dash(),

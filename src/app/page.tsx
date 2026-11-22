@@ -1,6 +1,7 @@
 import React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { redirect } from 'next/navigation';
 import {
   Calendar,
   Wallet,
@@ -11,24 +12,48 @@ import {
   ArrowRight,
   TrendingUp,
   Plus,
+  ClipboardList,
 } from 'lucide-react';
 import { AppShell } from '@/components/layout/AppShell';
+import { getCurrentUserSession } from '@/lib/auth/guard';
 
-export default function HomePage() {
+export default async function HomePage() {
+  const sessionData = await getCurrentUserSession();
+
+  // Jika belum login, arahkan ke portal masuk
+  if (!sessionData?.user) {
+    redirect('/sign-in');
+  }
+
+  const { user, roles: userRoles } = sessionData;
+  const isLeader = userRoles.includes('ketua_umum') || userRoles.includes('wakil_ketua');
+  const isFinance = userRoles.includes('bendahara') || isLeader;
+  const isSecretary = userRoles.includes('sekretaris') || isLeader;
+  const isLogistics = userRoles.includes('divisi_logistik') || isLeader;
+  const isEvent = userRoles.includes('divisi_acara') || userRoles.includes('divisi_humas') || isLeader;
+  const isSecurity = userRoles.includes('divisi_keamanan') || isLeader;
+
+  // Format label peran utama
+  const primaryRoleLabel =
+    userRoles.length > 0
+      ? userRoles[0].replace('_', ' ').toUpperCase()
+      : 'ANGGOTA ORGANISASI';
+
   const stats = [
-    { label: 'Saldo Kas Aktif', value: 'Rp 14.250.000', change: '+Rp 750.000 bln ini' },
-    { label: 'Agenda Terdekat', value: 'Kerja Bakti Akbar', change: '28 Nov 2026' },
-    { label: 'Inventaris Tersedia', value: '18 Unit Aset', change: 'Harga Dalam & Luar' },
-    { label: 'Penanganan Kasus', value: '2 Laporan Ditangani', change: 'Divisi Keamanan' },
-  ];
+    { label: 'Saldo Kas Terkini', value: 'Rp 14.250.000', change: '+Rp 750.000 bln ini', visible: true },
+    { label: 'Agenda Terdekat', value: 'Kerja Bakti Akbar', change: '28 Nov 2026', visible: true },
+    { label: 'Inventaris Tersedia', value: '18 Unit Aset', change: 'Harga Dalam & Luar', visible: true },
+    { label: 'Penanganan Kasus', value: '2 Kasus Aktif', change: 'Divisi Keamanan', visible: isSecurity },
+  ].filter((s) => s.visible);
 
   const modules = [
     {
       title: 'Kalender & Sounding',
-      division: 'Divisi Humas',
+      division: 'Divisi Humas & Acara',
       desc: 'Agenda terintegrasi dan siaran pesan WhatsApp pengumuman kegiatan.',
       href: '/events',
       icon: Calendar,
+      isPrimary: isEvent,
     },
     {
       title: 'Arus Kas & Iuran',
@@ -36,6 +61,7 @@ export default function HomePage() {
       desc: 'Multi-wallet kas, approval pengeluaran, dan rekonsiliasi iuran rutin.',
       href: '/finance',
       icon: Wallet,
+      isPrimary: isFinance,
     },
     {
       title: 'Persuratan Resmi',
@@ -43,6 +69,7 @@ export default function HomePage() {
       desc: 'Nomor surat otomatis, verifikasi draf divisi, dan pengesahan TTD sah.',
       href: '/letters',
       icon: FileText,
+      isPrimary: isSecretary,
     },
     {
       title: 'Inventaris Harga Ganda',
@@ -50,6 +77,7 @@ export default function HomePage() {
       desc: 'Katalog barang, pinjam warga subsidi, dan sewa komersial kas masuk.',
       href: '/inventory',
       icon: Package,
+      isPrimary: isLogistics,
     },
     {
       title: 'Data Anggota & Jabatan',
@@ -57,6 +85,7 @@ export default function HomePage() {
       desc: 'Pengelolaan struktur pengurus, status keanggotaan, dan penugasan divisi.',
       href: '/internal/members',
       icon: Users,
+      isPrimary: isLeader,
     },
     {
       title: 'Laporan Publik & Rahasia',
@@ -64,17 +93,18 @@ export default function HomePage() {
       desc: 'Aspirasi warga terbuka dan insiden rahasia berpenugasan petugas lapangan.',
       href: '/incidents',
       icon: ShieldAlert,
+      isPrimary: isSecurity,
     },
   ];
 
   return (
     <AppShell>
       <div className="space-y-6">
-        {/* Hero Card Modern White with Logo */}
+        {/* Banner Profil Pengurus Sesuai RBAC */}
         <div className="rounded-2xl border border-slate-200 bg-white p-5 md:p-6 shadow-[0_1px_3px_rgba(0,0,0,0.03)]">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div className="flex items-center gap-3.5">
-              <div className="relative h-12 w-12 flex-shrink-0 overflow-hidden rounded-xl border border-slate-200 bg-white p-1 shadow-xs">
+              <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-xl border border-slate-200 bg-white p-1 shadow-2xs">
                 <Image
                   src="/favicon.png"
                   alt="Logo Pandawa"
@@ -87,14 +117,14 @@ export default function HomePage() {
               <div>
                 <div className="flex items-center gap-2">
                   <span className="text-xs font-bold tracking-tight text-slate-900">
-                    ORGANISASI PANDAWA
+                    {user.name}
                   </span>
-                  <span className="rounded-full border border-[#D8AC41]/40 bg-[#D8AC41]/10 px-2 py-0.5 text-[9px] font-semibold text-[#B4821E]">
-                    Aktif
+                  <span className="rounded-full border border-[#D8AC41]/40 bg-[#D8AC41]/10 px-2 py-0.5 text-[9px] font-bold text-[#B4821E]">
+                    {primaryRoleLabel}
                   </span>
                 </div>
                 <h2 className="text-base font-bold text-slate-900 tracking-tight">
-                  Sistem Informasi Administrasi & Operasional
+                  Dasbor Operasional Organisasi Pandawa
                 </h2>
                 <p className="text-[11px] text-slate-500">
                   Wanangsri, Wonoboyo, Temanggung Regency
@@ -102,26 +132,49 @@ export default function HomePage() {
               </div>
             </div>
 
+            {/* Tombol Aksi Cepat Berbasis Peran */}
             <div className="flex items-center gap-2">
-              <Link
-                href="/letters"
-                className="flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-50 transition-colors cursor-pointer"
-              >
-                <Plus className="h-3.5 w-3.5 text-slate-500" />
-                Buat Surat
-              </Link>
-              <Link
-                href="/finance"
-                className="flex items-center gap-1.5 rounded-lg bg-slate-900 px-3 py-1.5 text-xs font-medium text-white hover:bg-slate-800 transition-colors cursor-pointer"
-              >
-                <Plus className="h-3.5 w-3.5 text-[#D8AC41]" />
-                Catat Transaksi
-              </Link>
+              {isSecretary && (
+                <Link
+                  href="/letters"
+                  className="flex items-center gap-1.5 rounded-lg border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-100 transition-colors cursor-pointer"
+                >
+                  <Plus className="h-3.5 w-3.5 text-slate-500" />
+                  <span>Draf Surat</span>
+                </Link>
+              )}
+              {isFinance && (
+                <Link
+                  href="/finance"
+                  className="flex items-center gap-1.5 rounded-lg bg-slate-900 px-3 py-1.5 text-xs font-medium text-white hover:bg-slate-800 transition-colors cursor-pointer"
+                >
+                  <Plus className="h-3.5 w-3.5 text-[#D8AC41]" />
+                  <span>Catat Kas</span>
+                </Link>
+              )}
+              {isLogistics && !isFinance && (
+                <Link
+                  href="/inventory"
+                  className="flex items-center gap-1.5 rounded-lg bg-slate-900 px-3 py-1.5 text-xs font-medium text-white hover:bg-slate-800 transition-colors cursor-pointer"
+                >
+                  <Plus className="h-3.5 w-3.5 text-[#D8AC41]" />
+                  <span>Pinjam Aset</span>
+                </Link>
+              )}
+              {isLeader && (
+                <Link
+                  href="/audit"
+                  className="flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-50 transition-colors cursor-pointer"
+                >
+                  <ClipboardList className="h-3.5 w-3.5 text-[#B4821E]" />
+                  <span>Jejak Audit</span>
+                </Link>
+              )}
             </div>
           </div>
         </div>
 
-        {/* Ringkasan Cepat */}
+        {/* Ringkasan Indikator Kinerja */}
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
           {stats.map((s) => (
             <div
@@ -142,14 +195,14 @@ export default function HomePage() {
           ))}
         </div>
 
-        {/* Grid 6 Modul Divisi */}
+        {/* Grid Modul Operasional dengan Highlight Peran RBAC */}
         <div>
           <div className="mb-3 flex items-center justify-between">
             <h3 className="text-xs font-bold uppercase tracking-wider text-slate-500">
-              Modul Operasional
+              Modul Layanan Organisasi
             </h3>
             <span className="text-[10px] font-medium text-slate-400">
-              6 Modul Divisi
+              Hak Akses Aktif: {userRoles.length > 0 ? userRoles.length : 1} Peran
             </span>
           </div>
 
@@ -160,11 +213,21 @@ export default function HomePage() {
                 <Link
                   key={m.title}
                   href={m.href}
-                  className="group relative flex flex-col justify-between rounded-xl border border-slate-200 bg-white p-4 shadow-[0_1px_2px_rgba(0,0,0,0.02)] hover:border-[#D8AC41] hover:shadow-md transition-all cursor-pointer"
+                  className={`group relative flex flex-col justify-between rounded-xl border p-4 shadow-[0_1px_2px_rgba(0,0,0,0.02)] transition-all cursor-pointer ${
+                    m.isPrimary
+                      ? 'border-[#D8AC41]/50 bg-slate-50/40 hover:border-[#D8AC41] hover:bg-white hover:shadow-md'
+                      : 'border-slate-200 bg-white hover:border-slate-300 hover:shadow-xs'
+                  }`}
                 >
                   <div>
                     <div className="flex items-center justify-between">
-                      <div className="flex h-9 w-9 items-center justify-center rounded-lg border border-slate-200 bg-slate-50 text-slate-800 group-hover:border-[#D8AC41]/40 group-hover:bg-[#D8AC41]/10 group-hover:text-[#B4821E] transition-colors">
+                      <div
+                        className={`flex h-9 w-9 items-center justify-center rounded-lg border transition-colors ${
+                          m.isPrimary
+                            ? 'border-[#D8AC41]/40 bg-[#D8AC41]/10 text-[#B4821E]'
+                            : 'border-slate-200 bg-slate-50 text-slate-700'
+                        }`}
+                      >
                         <Icon className="h-4 w-4" />
                       </div>
                       <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider">
@@ -181,7 +244,7 @@ export default function HomePage() {
                   </div>
 
                   <div className="mt-4 flex items-center text-[11px] font-semibold text-slate-700 group-hover:text-slate-900">
-                    <span>Akses Layanan</span>
+                    <span>{m.isPrimary ? 'Kelola Divisi' : 'Akses Layanan'}</span>
                     <ArrowRight className="ml-1 h-3 w-3 text-slate-400 group-hover:text-[#B4821E] transition-transform group-hover:translate-x-0.5" />
                   </div>
                 </Link>

@@ -1,12 +1,35 @@
+import { headers } from 'next/headers';
 import { db } from '@/lib/db';
 import { userRoles, roles, periods } from '@/lib/db/schema';
 import { eq, and } from 'drizzle-orm';
+import { auth } from './better-auth';
 import { PERMISSIONS, PermissionKey, RoleKey } from './permissions';
 
 export interface UserSessionData {
   userId: string;
   roles: RoleKey[];
   activePeriodId?: number;
+}
+
+/**
+ * Mengambil sesi pengguna aktif di sisi server via Better Auth.
+ */
+export async function getCurrentUserSession() {
+  try {
+    const session = await auth.api.getSession({
+      headers: await headers(),
+    });
+    if (!session?.user) return null;
+    const { roles: userRolesList, periodId } = await getUserActiveRoles(session.user.id);
+    return {
+      user: session.user,
+      session: session.session,
+      roles: userRolesList,
+      periodId,
+    };
+  } catch {
+    return null;
+  }
 }
 
 /**

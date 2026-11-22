@@ -3,7 +3,7 @@
 import React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import {
   X,
   Users,
@@ -15,17 +15,23 @@ import {
   ClipboardList,
   Megaphone,
   ArrowRight,
+  LogOut,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { authClient } from '@/lib/auth/auth-client';
 
 interface MobileDrawerProps {
   isOpen: boolean;
   onClose: () => void;
-  userRole?: string;
 }
 
 export function MobileDrawer({ isOpen, onClose }: MobileDrawerProps) {
   const pathname = usePathname();
+  const router = useRouter();
+  const { data: sessionData } = authClient.useSession();
+
+  const currentUser = sessionData?.user;
+  const displayName = currentUser?.name || 'Pengurus';
 
   const menuSections = [
     {
@@ -47,6 +53,17 @@ export function MobileDrawer({ isOpen, onClose }: MobileDrawerProps) {
       ],
     },
   ];
+
+  const handleSignOut = async () => {
+    try {
+      await authClient.signOut();
+      onClose();
+      router.push('/sign-in');
+      router.refresh();
+    } catch {
+      router.push('/sign-in');
+    }
+  };
 
   if (!isOpen) return null;
 
@@ -88,8 +105,14 @@ export function MobileDrawer({ isOpen, onClose }: MobileDrawerProps) {
           </button>
         </div>
 
+        {/* Info Pengguna Aktif */}
+        <div className="border-b border-slate-100 bg-slate-50/70 px-4 py-3">
+          <p className="text-xs font-bold text-slate-900 truncate">{displayName}</p>
+          <p className="text-[10px] text-slate-500 truncate">{currentUser?.email || 'Akun Pengurus'}</p>
+        </div>
+
         {/* Menu Navigation List */}
-        <div className="flex-1 overflow-y-auto p-4 space-y-6">
+        <div className="flex-1 overflow-y-auto p-4 space-y-5">
           {menuSections.map((section) => (
             <div key={section.title} className="space-y-1.5">
               <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400 px-2.5">
@@ -130,10 +153,16 @@ export function MobileDrawer({ isOpen, onClose }: MobileDrawerProps) {
           ))}
         </div>
 
-        {/* Footer info */}
-        <div className="border-t border-slate-200 p-3 bg-slate-50 text-[10px] text-slate-500 text-center">
-          <p className="font-semibold text-slate-700">Pandawa Official</p>
-          <p>Email: pandawaofficial02@gmail.com</p>
+        {/* Footer Tombol Keluar */}
+        <div className="border-t border-slate-200 p-3 bg-slate-50">
+          <button
+            type="button"
+            onClick={handleSignOut}
+            className="flex w-full items-center justify-center gap-2 rounded-lg border border-rose-200 bg-white py-2 text-xs font-semibold text-rose-700 hover:bg-rose-50 transition-colors cursor-pointer"
+          >
+            <LogOut className="h-3.5 w-3.5 text-rose-600" />
+            <span>Keluar Akun</span>
+          </button>
         </div>
       </div>
     </div>
