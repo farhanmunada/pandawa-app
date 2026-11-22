@@ -170,7 +170,7 @@ function ResetPasswordForm() {
             <input
               type="password"
               required
-              placeholder="Minimal 8 karakter"
+              placeholder="Minimal 4 karakter"
               value={newPassword}
               onChange={(e) => setNewPassword(e.target.value)}
               className="mt-1.5 w-full rounded-2xl bg-slate-50 px-4 py-3 text-sm text-slate-900 focus:bg-white focus:ring-2 focus:ring-[#D8AC41]/40 outline-none transition-all"

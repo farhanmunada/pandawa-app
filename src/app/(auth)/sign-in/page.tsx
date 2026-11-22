@@ -145,7 +145,7 @@ export default function SignInPage() {
             Nomor: <span className="font-mono font-bold text-slate-800">0001</span> (Ketua) atau <span className="font-mono font-bold text-slate-800">0002</span> (Wakil)
           </p>
           <p className="text-[10px] text-slate-500">
-            Kata Sandi: <span className="font-mono font-bold text-[#B4821E]">Password123!</span>
+            Kata Sandi: <span className="font-mono font-bold text-[#B4821E]">1234</span>
           </p>
         </div>
 

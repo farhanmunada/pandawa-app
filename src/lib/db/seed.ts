@@ -92,7 +92,7 @@ export async function seedInitialData() {
     {
       name: 'Ketua Umum Pandawa',
       email: 'ketua@pandawa.test',
-      password: 'Password123!',
+      password: '1234',
       roleKey: ROLE_KEYS.KETUA_UMUM,
       positionTitle: 'Ketua Umum',
       division: 'BPH',
@@ -101,7 +101,7 @@ export async function seedInitialData() {
     {
       name: 'Wakil Ketua Internal',
       email: 'wakil@pandawa.test',
-      password: 'Password123!',
+      password: '1234',
       roleKey: ROLE_KEYS.WAKIL_KETUA,
       positionTitle: 'Wakil Ketua',
       division: 'BPH',
@@ -110,7 +110,7 @@ export async function seedInitialData() {
     {
       name: 'Sekretaris Pandawa',
       email: 'sekretaris@pandawa.test',
-      password: 'Password123!',
+      password: '1234',
       roleKey: ROLE_KEYS.SEKRETARIS,
       positionTitle: 'Sekretaris Umum',
       division: 'Kesekretariatan',
@@ -119,7 +119,7 @@ export async function seedInitialData() {
     {
       name: 'Bendahara Pandawa',
       email: 'bendahara@pandawa.test',
-      password: 'Password123!',
+      password: '1234',
       roleKey: ROLE_KEYS.BENDAHARA,
       positionTitle: 'Bendahara Umum',
       division: 'Keuangan',
@@ -128,7 +128,7 @@ export async function seedInitialData() {
     {
       name: 'Koordinator Humas',
       email: 'humas@pandawa.test',
-      password: 'Password123!',
+      password: '1234',
       roleKey: ROLE_KEYS.DIVISI_HUMAS,
       positionTitle: 'Koordinator Sie Humas',
       division: 'Divisi Humas',
@@ -137,7 +137,7 @@ export async function seedInitialData() {
     {
       name: 'Anggota Aktif',
       email: 'anggota@pandawa.test',
-      password: 'Password123!',
+      password: '1234',
       roleKey: ROLE_KEYS.ANGGOTA,
       positionTitle: 'Anggota',
       division: 'Anggota',

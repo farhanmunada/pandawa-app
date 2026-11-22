@@ -19,7 +19,7 @@ Platform tata kelola administrasi, keuangan, persuratan resmi, sirkulasi aset, m
 
 Sistem ini bersifat internal tertutup tanpa pendaftaran publik mandiri. Setiap anggota dan pengurus menggunakan **Nomor Anggota (Kode Angka)** dan kata sandi yang diterbitkan oleh Wakil Ketua Organisasi.
 
-Kata sandi bawaan untuk seluruh akun demo: `Password123!`
+Kata sandi bawaan untuk seluruh akun demo: `1234`
 
 | Jabatan / Peran | Nomor Anggota (Kode Akses) | Email Alternatif | Divisi | Hak Akses Utama |
 |---|---|---|---|---|
@@ -108,7 +108,7 @@ npx tsx -e "import { seedInitialData } from './src/lib/db/seed'; seedInitialData
 ```bash
 npm run dev
 ```
-Buka peramban di [http://localhost:3000](http://localhost:3000) dan masuk menggunakan nomor anggota demo (misal: `0001` dengan sandi `Password123!`).
+Buka peramban di [http://localhost:3000](http://localhost:3000) dan masuk menggunakan nomor anggota demo (misal: `0001` dengan sandi `1234`).
 
 ---
 

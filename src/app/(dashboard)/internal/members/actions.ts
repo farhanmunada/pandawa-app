@@ -92,7 +92,7 @@ export async function createMemberAction(input: CreateMemberInput) {
       accountId: userId,
       providerId: 'credential',
       userId,
-      password: input.password || 'Pandawa123!',
+      password: input.password || '1234',
     });
 
     // 3. Simpan member dengan nomor kode angka
@@ -156,7 +156,7 @@ export async function updateMemberAction(input: UpdateMemberInput) {
       .where(eq(members.id, input.memberId));
 
     // 3. Perbarui kata sandi jika diisi oleh Wakil Ketua
-    if (input.password && input.password.length >= 8) {
+    if (input.password && input.password.length >= 4) {
       await db
         .update(account)
         .set({
