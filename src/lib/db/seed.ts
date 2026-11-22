@@ -1,5 +1,5 @@
 import { db } from './index';
-import { roles, periods, userRoles, members, user } from './schema';
+import { roles, periods, userRoles, members, user, wallets, assets } from './schema';
 import { ROLE_KEYS } from '../auth/permissions';
 import { auth } from '../auth/better-auth';
 import { eq } from 'drizzle-orm';
@@ -206,6 +206,98 @@ export async function seedInitialData() {
           status: 'active',
         });
       }
+    }
+  }
+
+  // Inisialisasi Dompet Kas Baku (Multi-Wallet)
+  console.log('Seeding default organizational wallets...');
+  const defaultWallets = [
+    { name: 'Kas Utama Organisasi', description: 'Arus kas operasional utama organisasi kepemudaan', currentBalance: 12500000 },
+    { name: 'Kas Sosial & Kematian', description: 'Dana santunan dan kepedulian warga pemuda', currentBalance: 3200000 },
+    { name: 'Kas Usaha & Sewa Inventaris', description: 'Penerimaan sewa perlengkapan dan unit usaha pemuda', currentBalance: 1850000 },
+    { name: 'Kas Khusus Acara', description: 'Penampungan iuran dan alokasi dana kegiatan aktif', currentBalance: 750000 },
+  ];
+
+  for (const w of defaultWallets) {
+    const existing = await db.query.wallets.findFirst({
+      where: eq(wallets.name, w.name),
+    });
+    if (!existing) {
+      await db.insert(wallets).values(w);
+    }
+  }
+
+  // Inisialisasi Katalog Inventaris Awal (Skema Harga Ganda)
+  console.log('Seeding initial inventory assets...');
+  const initialAssets = [
+    {
+      code: 'AST-TND-001',
+      name: 'Tenda Pesta Ukuran 4x6 Meter',
+      category: 'Tenda & Terpal',
+      totalQuantity: 4,
+      availableQuantity: 4,
+      condition: 'GOOD',
+      storageLocation: 'Gudang Utama Pemuda (Balai Pertemuan)',
+      isRentable: true,
+      internalRatePerDay: 50000, // Harga Warga/Anggota
+      externalRatePerDay: 175000, // Harga Komersial Pihak Luar
+    },
+    {
+      code: 'AST-SND-001',
+      name: 'Sound System Portable Wireless 15 Inch + 2 Mic',
+      category: 'Audio & Elektronik',
+      totalQuantity: 2,
+      availableQuantity: 2,
+      condition: 'GOOD',
+      storageLocation: 'Ruang Inventaris Sekretariat',
+      isRentable: true,
+      internalRatePerDay: 50000,
+      externalRatePerDay: 150000,
+    },
+    {
+      code: 'AST-KRS-001',
+      name: 'Kursi Plastik Napolly',
+      category: 'Tempat Duduk',
+      totalQuantity: 120,
+      availableQuantity: 120,
+      condition: 'GOOD',
+      storageLocation: 'Gudang Utama Pemuda',
+      isRentable: true,
+      internalRatePerDay: 500, // Rp 500 / buah
+      externalRatePerDay: 1500, // Rp 1.500 / buah
+    },
+    {
+      code: 'AST-TRP-001',
+      name: 'Terpal Plastik Tebal 6x8 Meter',
+      category: 'Tenda & Terpal',
+      totalQuantity: 5,
+      availableQuantity: 5,
+      condition: 'GOOD',
+      storageLocation: 'Gudang Utama Pemuda',
+      isRentable: true,
+      internalRatePerDay: 15000,
+      externalRatePerDay: 40000,
+    },
+    {
+      code: 'AST-LMP-001',
+      name: 'Lampu Tembak LED 100 Watt + Kabel Roll 25m',
+      category: 'Penerangan',
+      totalQuantity: 6,
+      availableQuantity: 6,
+      condition: 'GOOD',
+      storageLocation: 'Ruang Inventaris Sekretariat',
+      isRentable: true,
+      internalRatePerDay: 10000,
+      externalRatePerDay: 30000,
+    },
+  ];
+
+  for (const a of initialAssets) {
+    const existing = await db.query.assets.findFirst({
+      where: eq(assets.code, a.code),
+    });
+    if (!existing) {
+      await db.insert(assets).values(a);
     }
   }
 
