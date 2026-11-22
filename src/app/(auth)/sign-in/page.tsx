@@ -135,26 +135,6 @@ export default function SignInPage() {
             )}
           </button>
         </form>
-
-        {/* Petunjuk Kredensial Uji Akses */}
-        <div className="mt-6 rounded-2xl bg-slate-50/70 p-3.5 text-center">
-          <p className="text-[11px] font-semibold text-slate-700">
-            Akses Uji Demo:
-          </p>
-          <p className="mt-0.5 text-[10px] text-slate-500">
-            Nomor: <span className="font-mono font-bold text-slate-800">0001</span> (Ketua) atau <span className="font-mono font-bold text-slate-800">0002</span> (Wakil)
-          </p>
-          <p className="text-[10px] text-slate-500">
-            Kata Sandi: <span className="font-mono font-bold text-[#B4821E]">1234</span>
-          </p>
-        </div>
-
-        {/* Catatan Hak Kelola Wakil Ketua */}
-        <div className="mt-4 text-center">
-          <p className="text-[10px] text-slate-400 leading-relaxed">
-            Akun baru diterbitkan langsung oleh Wakil Ketua Organisasi.
-          </p>
-        </div>
       </div>
     </div>
   );
