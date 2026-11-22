@@ -50,30 +50,30 @@ function LetterDetailInner({ letterId }: { letterId: number }) {
   return (
     <div className="space-y-6">
       {/* Top Action Bar */}
-      <div className="flex items-center justify-between border-b border-neutral-200 pb-4 print:hidden">
+      <div className="flex items-center justify-between border-b border-slate-200 pb-4 print:hidden">
         <Link
           href="/letters"
-          className="flex items-center gap-1.5 text-xs font-semibold text-neutral-600 hover:text-neutral-900"
+          className="flex items-center gap-1.5 text-xs font-semibold text-slate-600 hover:text-slate-900 cursor-pointer"
         >
           <ArrowLeft className="h-4 w-4" />
           Kembali ke Persuratan
         </Link>
         <button
           onClick={() => window.print()}
-          className="flex items-center gap-1.5 rounded-lg bg-neutral-900 px-3.5 py-1.5 text-xs font-medium text-white hover:bg-neutral-800"
+          className="flex items-center gap-1.5 rounded-lg bg-slate-900 px-3.5 py-1.5 text-xs font-medium text-white hover:bg-slate-800 transition-colors cursor-pointer"
         >
-          <Printer className="h-4 w-4" />
+          <Printer className="h-4 w-4 text-[#D8AC41]" />
           Cetak Dokumen (PDF)
         </button>
       </div>
 
       {/* Printable Sheet View */}
-      <div className="mx-auto max-w-3xl rounded-2xl border border-neutral-200 bg-white p-8 md:p-12 shadow-sm print:m-0 print:max-w-none print:border-none print:p-0 print:shadow-none">
+      <div className="mx-auto max-w-3xl rounded-2xl border border-slate-200 bg-white p-8 md:p-12 shadow-sm print:m-0 print:max-w-none print:border-none print:p-0 print:shadow-none">
         {/* Kop Surat Resmi */}
         <Letterhead />
 
         {/* Letter Meta */}
-        <div className="mt-6 flex justify-between text-xs text-neutral-800">
+        <div className="mt-6 flex justify-between text-xs text-slate-800">
           <div>
             <p><span className="font-semibold">Nomor:</span> {letter.letterNumber}</p>
             <p><span className="font-semibold">Perihal:</span> {letter.subject}</p>
@@ -90,7 +90,7 @@ function LetterDetailInner({ letterId }: { letterId: number }) {
         </div>
 
         {/* Letter Body */}
-        <div className="mt-8 space-y-4 text-xs leading-relaxed text-neutral-800 text-justify">
+        <div className="mt-8 space-y-4 text-xs leading-relaxed text-slate-800 text-justify">
           <p>Dengan hormat,</p>
           <p>
             Sehubungan dengan agenda kegiatan organisasi kepemudaan Pandawa Wanangsri, dengan ini kami sampaikan perihal{' '}
@@ -102,17 +102,17 @@ function LetterDetailInner({ letterId }: { letterId: number }) {
         </div>
 
         {/* Signatures Area */}
-        <div className="mt-16 grid grid-cols-2 text-center text-xs text-neutral-800">
+        <div className="mt-16 grid grid-cols-2 text-center text-xs text-slate-800">
           <div>
             <p className="font-semibold">Hormat kami,</p>
-            <p className="text-neutral-500">Sekretaris Organisasi</p>
+            <p className="text-slate-500">Sekretaris Organisasi</p>
             <div className="my-6">
               {letter.status === 'PUBLISHED' ? (
-                <div className="inline-block rounded border border-neutral-300 px-3 py-1 font-serif italic text-neutral-800">
+                <div className="inline-block rounded border border-[#D8AC41]/50 bg-[#D8AC41]/10 px-3 py-1 font-serif italic text-[#B4821E]">
                   (Tertanda Secara Sah)
                 </div>
               ) : (
-                <div className="text-neutral-400 italic">Draf Belum Disahkan</div>
+                <div className="text-slate-400 italic">Draf Belum Disahkan</div>
               )}
             </div>
             <p className="font-bold underline">{letter.secondarySignatoryName || 'Sekretaris'}</p>
@@ -120,14 +120,14 @@ function LetterDetailInner({ letterId }: { letterId: number }) {
 
           <div>
             <p className="font-semibold">Mengetahui,</p>
-            <p className="text-neutral-500">Ketua Umum Pandawa</p>
+            <p className="text-slate-500">Ketua Umum Pandawa</p>
             <div className="my-6">
               {letter.status === 'PUBLISHED' ? (
-                <div className="inline-block rounded border border-neutral-300 px-3 py-1 font-serif italic text-neutral-800">
+                <div className="inline-block rounded border border-[#D8AC41]/50 bg-[#D8AC41]/10 px-3 py-1 font-serif italic text-[#B4821E]">
                   (Tertanda Secara Sah)
                 </div>
               ) : (
-                <div className="text-neutral-400 italic">Draf Belum Disahkan</div>
+                <div className="text-slate-400 italic">Draf Belum Disahkan</div>
               )}
             </div>
             <p className="font-bold underline">{letter.primarySignatoryName || 'Ketua Umum'}</p>

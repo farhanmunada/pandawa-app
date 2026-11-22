@@ -11,13 +11,14 @@
   --input: #e2e8f0;
   --primary: #0f172a;
   --primary-foreground: #ffffff;
-  --secondary: #f1f5f9;
-  --secondary-foreground: #1e293b;
-  --accent: #1e40af;
-  --accent-foreground: #ffffff;
+  --secondary: #f8fafc;
+  --secondary-foreground: #0f172a;
+  --accent: #d8ac41;
+  --accent-foreground: #0f172a;
+  --accent-dark: #b4821e;
   --destructive: #dc2626;
   --destructive-foreground: #ffffff;
-  --ring: #2563eb;
+  --ring: #d8ac41;
 }
 
 @theme inline {
@@ -35,14 +36,15 @@
   --color-secondary-foreground: var(--secondary-foreground);
   --color-accent: var(--accent);
   --color-accent-foreground: var(--accent-foreground);
+  --color-accent-dark: var(--accent-dark);
   --color-destructive: var(--destructive);
   --color-destructive-foreground: var(--destructive-foreground);
   --color-ring: var(--ring);
 }
 
 body {
-  background-color: var(--background);
-  color: var(--foreground);
+  background-color: #ffffff;
+  color: #0f172a;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;

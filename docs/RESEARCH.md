@@ -82,4 +82,26 @@ Organisasi kepemudaan (seperti Karang Taruna atau komunitas pemuda) memiliki din
 ---
 
 ## 4. Kesimpulan Riset
-Arsitektur yang diusulkan (Next.js 15 + Neon + Drizzle + Better Auth + Google Drive API) memenuhi seluruh kriteria: biaya operasional Rp0 (serverless & cloud gratis), tahan terhadap pergantian pengurus, performa optimal di perangkat mobile, serta menjamin integritas data dan audit trail organisasi.
+Arsitektur yang diusulkan (Next.js 16 + Neon + Drizzle + Better Auth + Google Drive API) memenuhi seluruh kriteria: biaya operasional Rp0 (serverless & cloud gratis), tahan terhadap pergantian pengurus, performa optimal di perangkat mobile, serta menjamin integritas data dan audit trail organisasi.
+
+---
+
+## 5. Riset Desain Sistem UI/UX Pro Max (Warna Logo & Modern Swiss)
+
+Berdasarkan analisis visual aset logo organisasi (`public/logo.png`) dan riset intelijen desain menggunakan pustaka `ui-ux-pro-max`:
+
+### 5.1 Ekstraksi Warna Resmi Logo
+* Hasil dekode PNG scanline un-filtered menunjukkan warna dominan non-transparan:
+  * **Brand Gold Emas:** `#D8AC41` (rgb: 216, 172, 65) - 193.504 piksel.
+  * **Putih Bersih:** `#FFFFFF` / `#FEFEFE` (rgb: 254, 254, 254).
+* Kombinasi 3 Warna yang Dipilih:
+  1. **Base White (`#FFFFFF`):** Latar belakang utama, panel kartu, modal sheet yang bersih dan modern.
+  2. **Brand Accent Gold (`#D8AC41` & `#B4821E` untuk teks):** Lambang identitas logo, penanda tab aktif, badge premium, dan ring fokus.
+  3. **High-Contrast Obsidian Slate (`#0F172A`):** Tipografi judul, tombol aksi utama, dan kontras navigasi Swiss.
+  4. **Subtle Slate (`#64748B` / `#E2E8F0`):** Garis tepi 1px minimalis dan teks sekunder.
+
+### 5.2 Standar Antarmuka Modern
+* **Minimalkan Teks Panduan:** Menghilangkan paragraf instruksional berlebih di seluruh halaman. Menggantinya dengan visual micro-copy yang ringkas, placeholder informatif, dan badge status langsung.
+* **Larangan Penggunaan Emoticon (Zero Emojis):** Seluruh antarmuka dilarang menggunakan karakter emotikon/emoji teks. Seluruh representasi visual murni menggunakan ikon vektor SVG seragam (`lucide-react`) dengan ukuran standar (16px / 20px) dan stroke 1.5–2px.
+* **Aksesibilitas & Feedback:** Setiap elemen interaktif memiliki `cursor-pointer`, transisi hover halus (150–200ms), kontras teks minimal 4.5:1, dan area sentuh mobile minimal 44x44px.
+

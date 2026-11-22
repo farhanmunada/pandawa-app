@@ -73,9 +73,13 @@ export default function FinancePage() {
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
-      const originalFile = e.target.files[0];
-      const compressed = await compressImageClient(originalFile);
-      setReceiptFile(compressed);
+      const file = e.target.files[0];
+      try {
+        const compressed = await compressImageClient(file, 800);
+        setReceiptFile(compressed);
+      } catch {
+        setReceiptFile(file);
+      }
     }
   };
 
@@ -124,60 +128,61 @@ export default function FinancePage() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between border-b border-neutral-200 pb-4">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between border-b border-slate-200 pb-4">
         <div>
-          <span className="text-[11px] font-semibold text-neutral-500 uppercase tracking-wider">
+          <span className="text-[10px] font-bold text-[#B4821E] uppercase tracking-wider">
             Divisi Keuangan
           </span>
-          <h2 className="text-xl font-bold tracking-tight text-neutral-900">
+          <h2 className="text-lg font-bold tracking-tight text-slate-900">
             Arus Kas & Multi-Wallet
           </h2>
-          <p className="text-xs text-neutral-500">
-            Pengelolaan buku kas operasional, sosial, usaha, dan persetujuan pengeluaran.
-          </p>
         </div>
 
         <button
           type="button"
           onClick={() => setIsModalOpen(true)}
-          className="inline-flex items-center gap-2 rounded-xl bg-neutral-900 px-4 py-2.5 text-xs font-semibold text-white shadow-xs hover:bg-neutral-800 transition"
+          className="inline-flex items-center gap-1.5 rounded-lg bg-slate-900 px-3.5 py-2 text-xs font-semibold text-white hover:bg-slate-800 transition-colors cursor-pointer"
         >
-          <Plus className="h-4 w-4" />
-          <span>Catat Transaksi Baru</span>
+          <Plus className="h-4 w-4 text-[#D8AC41]" />
+          <span>Catat Transaksi</span>
         </button>
       </div>
 
       {/* Ringkasan Total Saldo */}
-      <div className="rounded-2xl border border-neutral-200 bg-white p-5 shadow-xs">
-        <span className="text-xs font-medium text-neutral-500">Total Akumulasi Saldo Kas Organisasi</span>
-        <h3 className="mt-1 text-2xl font-extrabold text-neutral-900">
+      <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-[0_1px_3px_rgba(0,0,0,0.03)]">
+        <div className="flex items-center justify-between">
+          <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">
+            Total Saldo Kas Organisasi
+          </span>
+          <span className="rounded-md border border-[#D8AC41]/30 bg-[#D8AC41]/10 px-2 py-0.5 text-[10px] font-bold text-[#B4821E]">
+            {walletsList.length} Pos Dompet
+          </span>
+        </div>
+        <h3 className="mt-1.5 text-2xl font-bold tracking-tight text-slate-900">
           Rp {totalBalance.toLocaleString('id-ID')}
         </h3>
-        <p className="mt-1 text-[11px] text-neutral-500">
-          Terbagi dalam {walletsList.length} pos dompet aktif.
-        </p>
       </div>
 
       {/* Kartu Dompet Kas (Multi-Wallet) */}
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-        {walletsList.map((w) => (
+        {walletsList.map((w, idx) => (
           <div
             key={w.id}
             onClick={() => setSelectedWalletId(String(w.id))}
-            className={`cursor-pointer rounded-xl border p-4 transition ${
+            className={`cursor-pointer rounded-xl border p-4 transition-all ${
               selectedWalletId === String(w.id)
-                ? 'border-neutral-900 bg-neutral-50 shadow-xs'
-                : 'border-neutral-200 bg-white hover:border-neutral-300'
-            }`}
+                ? 'border-slate-900 bg-slate-50 shadow-xs'
+                : 'border-slate-200 bg-white hover:border-slate-300'
+            } ${idx === 0 ? 'border-l-4 border-l-[#D8AC41]' : ''}`}
           >
             <div className="flex items-center justify-between">
-              <span className="text-xs font-semibold text-neutral-700 truncate">{w.name}</span>
-              <Wallet className="h-4 w-4 text-neutral-400" />
+              <span className="text-xs font-bold text-slate-800 truncate">{w.name}</span>
+              <Wallet className="h-3.5 w-3.5 text-slate-400" />
             </div>
-            <p className="mt-2 text-base font-bold text-neutral-900">
+            <p className="mt-2 text-base font-bold text-slate-900">
               Rp {Number(w.currentBalance).toLocaleString('id-ID')}
             </p>
-            <p className="mt-1 text-[10px] text-neutral-500 line-clamp-1">
+            <p className="mt-0.5 text-[10px] text-slate-400 line-clamp-1">
               {w.description || 'Pos kas aktif'}
             </p>
           </div>
@@ -185,31 +190,32 @@ export default function FinancePage() {
       </div>
 
       {/* Filter Daftar Transaksi */}
-      <div className="flex items-center justify-between border-b border-neutral-200 pb-3">
+      <div className="flex items-center justify-between border-b border-slate-200 pb-2.5">
         <div className="flex items-center gap-2">
-          <span className="text-xs font-bold text-neutral-900">Mutasi Buku Kas</span>
+          <span className="text-xs font-bold text-slate-900">Mutasi Transaksi</span>
           {selectedWalletId !== 'ALL' && (
             <button
               onClick={() => setSelectedWalletId('ALL')}
-              className="text-[11px] text-blue-600 hover:underline"
+              className="text-[10px] text-[#B4821E] hover:underline font-medium cursor-pointer"
             >
-              (Tampilkan Semua Dompet)
+              (Tampilkan Semua)
             </button>
           )}
         </div>
+        <span className="text-[10px] text-slate-400">{filteredTransactions.length} catatan</span>
       </div>
 
       {/* Tabel Transaksi */}
-      <div className="space-y-2.5">
+      <div className="space-y-2">
         {filteredTransactions.map((trx) => (
           <div
             key={trx.id}
-            className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 rounded-xl border border-neutral-200 bg-white p-4 shadow-xs"
+            className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 rounded-xl border border-slate-200 bg-white p-3.5 shadow-[0_1px_2px_rgba(0,0,0,0.02)]"
           >
             <div className="flex items-start gap-3">
               <div
                 className={`mt-0.5 flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg ${
-                  trx.type === 'IN' ? 'bg-emerald-50 text-emerald-600' : 'bg-rose-50 text-rose-600'
+                  trx.type === 'IN' ? 'bg-emerald-50 text-emerald-700' : 'bg-rose-50 text-rose-700'
                 }`}
               >
                 {trx.type === 'IN' ? (
@@ -221,16 +227,16 @@ export default function FinancePage() {
 
               <div>
                 <div className="flex items-center gap-2">
-                  <h4 className="text-xs font-bold text-neutral-900">{trx.description}</h4>
-                  <span className="rounded-sm bg-neutral-100 px-1.5 py-0.5 text-[9px] font-medium text-neutral-600">
+                  <h4 className="text-xs font-bold text-slate-900">{trx.description}</h4>
+                  <span className="rounded border border-slate-200 bg-slate-50 px-1.5 py-0.5 text-[9px] font-medium text-slate-600">
                     {trx.category}
                   </span>
-                  <span className="rounded-sm bg-neutral-100 px-1.5 py-0.5 text-[9px] font-medium text-neutral-600">
+                  <span className="rounded border border-slate-200 bg-slate-50 px-1.5 py-0.5 text-[9px] font-medium text-slate-600">
                     {trx.walletName}
                   </span>
                 </div>
 
-                <div className="mt-1 flex items-center gap-3 text-[11px] text-neutral-400">
+                <div className="mt-1 flex items-center gap-3 text-[10px] text-slate-400">
                   <span>{trx.transactionDate}</span>
                   <span>Oleh: {trx.creatorName}</span>
                   {trx.receiptDriveUrl && (
@@ -238,7 +244,7 @@ export default function FinancePage() {
                       href={trx.receiptDriveUrl}
                       target="_blank"
                       rel="noreferrer"
-                      className="inline-flex items-center text-blue-600 hover:underline"
+                      className="inline-flex items-center text-[#B4821E] hover:underline font-medium"
                     >
                       <FileText className="mr-1 h-3 w-3" />
                       <span>Nota</span>
@@ -252,22 +258,22 @@ export default function FinancePage() {
               <div className="text-right">
                 <span
                   className={`text-xs font-bold ${
-                    trx.type === 'IN' ? 'text-emerald-600' : 'text-neutral-900'
+                    trx.type === 'IN' ? 'text-emerald-700' : 'text-slate-900'
                   }`}
                 >
                   {trx.type === 'IN' ? '+' : '-'} Rp {Number(trx.amount).toLocaleString('id-ID')}
                 </span>
                 <div className="mt-0.5">
                   {trx.status === 'APPROVED' ? (
-                    <span className="inline-flex items-center text-[10px] text-emerald-600 font-medium">
+                    <span className="inline-flex items-center text-[10px] text-emerald-700 font-medium">
                       <Check className="mr-0.5 h-3 w-3" /> Disetujui
                     </span>
                   ) : trx.status === 'PENDING_APPROVAL' ? (
-                    <span className="inline-flex items-center text-[10px] text-amber-600 font-medium">
-                      <Clock className="mr-0.5 h-3 w-3" /> Menunggu Persetujuan Ketua (&gt;500k)
+                    <span className="inline-flex items-center text-[10px] text-amber-700 font-medium">
+                      <Clock className="mr-0.5 h-3 w-3" /> Verifikasi Ketua (&gt;500k)
                     </span>
                   ) : (
-                    <span className="inline-flex items-center text-[10px] text-rose-600 font-medium">
+                    <span className="inline-flex items-center text-[10px] text-rose-700 font-medium">
                       <X className="mr-0.5 h-3 w-3" /> Ditolak
                     </span>
                   )}
@@ -279,7 +285,7 @@ export default function FinancePage() {
                   type="button"
                   onClick={() => handleApprove(trx.id)}
                   disabled={isPending}
-                  className="rounded-lg bg-emerald-600 px-2.5 py-1 text-[11px] font-semibold text-white hover:bg-emerald-700 transition"
+                  className="rounded-lg bg-emerald-600 px-2.5 py-1 text-[11px] font-semibold text-white hover:bg-emerald-700 transition cursor-pointer"
                 >
                   Setujui
                 </button>
@@ -289,7 +295,7 @@ export default function FinancePage() {
         ))}
 
         {filteredTransactions.length === 0 && (
-          <div className="rounded-xl border border-dashed border-neutral-300 p-8 text-center text-xs text-neutral-500">
+          <div className="rounded-xl border border-dashed border-slate-200 p-8 text-center text-xs text-slate-400">
             Belum ada transaksi tercatat pada dompet ini.
           </div>
         )}
@@ -297,20 +303,20 @@ export default function FinancePage() {
 
       {/* Modal Input Transaksi */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40">
-          <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl">
-            <h3 className="text-base font-bold text-neutral-900">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-xs">
+          <div className="w-full max-w-md rounded-2xl bg-white p-6 border border-slate-200 shadow-2xl">
+            <h3 className="text-base font-bold text-slate-900">
               Pencatatan Transaksi Kas
             </h3>
 
             <form onSubmit={handleSubmitTransaction} className="mt-4 space-y-3">
               <div className="grid grid-cols-2 gap-2">
                 <div>
-                  <label className="block text-[11px] font-semibold text-neutral-700">Jenis Mutasi</label>
+                  <label className="block text-[11px] font-semibold text-slate-700">Jenis Mutasi</label>
                   <select
                     value={formType}
                     onChange={(e) => setFormType(e.target.value as 'IN' | 'OUT')}
-                    className="mt-1 w-full rounded-lg border border-neutral-300 px-3 py-2 text-xs text-neutral-900 focus:outline-hidden"
+                    className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs text-slate-900 focus:border-[#D8AC41] focus:ring-1 focus:ring-[#D8AC41] outline-none"
                   >
                     <option value="OUT">Pengeluaran (Kas Keluar)</option>
                     <option value="IN">Pemasukan (Kas Masuk)</option>
@@ -318,11 +324,11 @@ export default function FinancePage() {
                 </div>
 
                 <div>
-                  <label className="block text-[11px] font-semibold text-neutral-700">Dompet Kas</label>
+                  <label className="block text-[11px] font-semibold text-slate-700">Dompet Kas</label>
                   <select
                     value={formWalletId}
                     onChange={(e) => setFormWalletId(e.target.value)}
-                    className="mt-1 w-full rounded-lg border border-neutral-300 px-3 py-2 text-xs text-neutral-900 focus:outline-hidden"
+                    className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs text-slate-900 focus:border-[#D8AC41] focus:ring-1 focus:ring-[#D8AC41] outline-none"
                   >
                     {walletsList.map((w) => (
                       <option key={w.id} value={w.id}>
@@ -334,76 +340,76 @@ export default function FinancePage() {
               </div>
 
               <div>
-                <label className="block text-[11px] font-semibold text-neutral-700">Nominal (Rp)</label>
+                <label className="block text-[11px] font-semibold text-slate-700">Nominal (Rp)</label>
                 <input
                   type="number"
                   required
                   placeholder="e.g. 150000"
                   value={formAmount}
                   onChange={(e) => setFormAmount(e.target.value)}
-                  className="mt-1 w-full rounded-lg border border-neutral-300 px-3 py-2 text-xs text-neutral-900 focus:outline-hidden"
+                  className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs text-slate-900 focus:border-[#D8AC41] focus:ring-1 focus:ring-[#D8AC41] outline-none"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-2">
                 <div>
-                  <label className="block text-[11px] font-semibold text-neutral-700">Kategori</label>
+                  <label className="block text-[11px] font-semibold text-slate-700">Kategori</label>
                   <input
                     type="text"
                     required
                     placeholder="e.g. Konsumsi, Logistik"
                     value={formCategory}
                     onChange={(e) => setFormCategory(e.target.value)}
-                    className="mt-1 w-full rounded-lg border border-neutral-300 px-3 py-2 text-xs text-neutral-900 focus:outline-hidden"
+                    className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs text-slate-900 focus:border-[#D8AC41] focus:ring-1 focus:ring-[#D8AC41] outline-none"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-[11px] font-semibold text-neutral-700">Tanggal Transaksi</label>
+                  <label className="block text-[11px] font-semibold text-slate-700">Tanggal Transaksi</label>
                   <input
                     type="date"
                     required
                     value={formDate}
                     onChange={(e) => setFormDate(e.target.value)}
-                    className="mt-1 w-full rounded-lg border border-neutral-300 px-3 py-2 text-xs text-neutral-900 focus:outline-hidden"
+                    className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs text-slate-900 focus:border-[#D8AC41] focus:ring-1 focus:ring-[#D8AC41] outline-none"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-[11px] font-semibold text-neutral-700">Keterangan / Uraian</label>
+                <label className="block text-[11px] font-semibold text-slate-700">Keterangan</label>
                 <textarea
                   required
                   rows={2}
                   placeholder="Uraian kebutuhan transaksi kas"
                   value={formDescription}
                   onChange={(e) => setFormDescription(e.target.value)}
-                  className="mt-1 w-full rounded-lg border border-neutral-300 px-3 py-2 text-xs text-neutral-900 focus:outline-hidden"
+                  className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs text-slate-900 focus:border-[#D8AC41] focus:ring-1 focus:ring-[#D8AC41] outline-none"
                 />
               </div>
 
               <div>
-                <label className="block text-[11px] font-semibold text-neutral-700">Foto Nota / Bukti Transfer</label>
+                <label className="block text-[11px] font-semibold text-slate-700">Foto Nota / Bukti Transfer</label>
                 <input
                   type="file"
                   accept="image/*"
                   onChange={handleFileChange}
-                  className="mt-1 w-full text-xs text-neutral-500 file:mr-2 file:rounded-md file:border-0 file:bg-neutral-100 file:px-3 file:py-1.5 file:text-xs file:font-semibold file:text-neutral-700 hover:file:bg-neutral-200"
+                  className="mt-1 w-full text-xs text-slate-500 file:mr-2 file:rounded-md file:border-0 file:bg-slate-100 file:px-3 file:py-1 file:text-xs file:font-semibold file:text-slate-700 hover:file:bg-slate-200 cursor-pointer"
                 />
               </div>
 
-              <div className="mt-5 flex items-center justify-end gap-2 pt-2 border-t border-neutral-100">
+              <div className="mt-5 flex items-center justify-end gap-2 pt-3 border-t border-slate-100">
                 <button
                   type="button"
                   onClick={() => setIsModalOpen(false)}
-                  className="rounded-lg px-3 py-1.5 text-xs font-medium text-neutral-600 hover:bg-neutral-100"
+                  className="rounded-lg px-3 py-1.5 text-xs font-medium text-slate-600 hover:bg-slate-100 cursor-pointer"
                 >
                   Batal
                 </button>
                 <button
                   type="submit"
                   disabled={isPending}
-                  className="rounded-lg bg-neutral-900 px-4 py-1.5 text-xs font-semibold text-white hover:bg-neutral-800 disabled:opacity-50"
+                  className="rounded-lg bg-slate-900 px-4 py-1.5 text-xs font-semibold text-white hover:bg-slate-800 disabled:opacity-50 cursor-pointer"
                 >
                   {isPending ? 'Menyimpan...' : 'Simpan Transaksi'}
                 </button>

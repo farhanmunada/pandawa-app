@@ -13,14 +13,14 @@ export function AppShell({ children }: AppShellProps) {
   const [drawerOpen, setDrawerOpen] = useState(false);
 
   return (
-    <div className="flex min-h-screen flex-col bg-neutral-50 text-neutral-900 dark:bg-neutral-950 dark:text-neutral-100">
+    <div className="flex min-h-screen flex-col bg-white text-slate-900">
       <HeaderBar onOpenDrawer={() => setDrawerOpen(true)} />
       <Suspense fallback={null}>
         <MobileDrawer isOpen={drawerOpen} onClose={() => setDrawerOpen(false)} />
       </Suspense>
 
-      <main className="flex-1 pb-20 md:pb-8">
-        <div className="mx-auto max-w-5xl px-4 py-4 md:px-6">{children}</div>
+      <main className="flex-1 pb-20 md:pb-10">
+        <div className="mx-auto max-w-5xl px-4 py-5 md:px-6">{children}</div>
       </main>
 
       <Suspense fallback={null}>

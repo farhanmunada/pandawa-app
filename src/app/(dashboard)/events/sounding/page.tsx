@@ -52,10 +52,10 @@ export default function SoundingBroadcastPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between border-b border-neutral-200 pb-3">
+      <div className="flex items-center justify-between border-b border-slate-200 pb-3">
         <Link
           href="/events"
-          className="inline-flex items-center gap-1.5 text-xs font-medium text-neutral-600 hover:text-neutral-900"
+          className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-600 hover:text-slate-900 transition-colors cursor-pointer"
         >
           <ArrowLeft className="h-4 w-4" />
           <span>Kembali ke Kalender Agenda</span>
@@ -63,26 +63,23 @@ export default function SoundingBroadcastPage() {
       </div>
 
       <div>
-        <span className="text-[11px] font-semibold text-neutral-500 uppercase tracking-wider">
+        <span className="text-[10px] font-bold text-[#B4821E] uppercase tracking-wider">
           Divisi Humas
         </span>
-        <h2 className="text-xl font-bold tracking-tight text-neutral-900">
+        <h2 className="text-lg font-bold tracking-tight text-slate-900">
           Generator Pesan Sounding WhatsApp
         </h2>
-        <p className="text-xs text-neutral-500">
-          Memformat pesan siaran resmi kegiatan, sumber dana, rincian iuran, dan surat terkait siap salin ke grup komunitas.
-        </p>
       </div>
 
       <div className="grid gap-6 lg:grid-cols-3">
         {/* Pemilihan Agenda */}
         <div className="space-y-4">
-          <div className="rounded-2xl border border-neutral-200 bg-white p-5 shadow-xs">
-            <label className="block text-xs font-bold text-neutral-900">Pilih Agenda Kegiatan</label>
+          <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-[0_1px_3px_rgba(0,0,0,0.03)]">
+            <label className="block text-xs font-bold text-slate-900">Pilih Agenda Kegiatan</label>
             <select
               value={selectedEventId}
               onChange={(e) => setSelectedEventId(e.target.value)}
-              className="mt-2 w-full rounded-xl border border-neutral-300 px-3 py-2 text-xs text-neutral-900 focus:outline-hidden"
+              className="mt-2 w-full rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs text-slate-900 focus:border-[#D8AC41] focus:ring-1 focus:ring-[#D8AC41] outline-none"
             >
               {eventsList.map((e) => (
                 <option key={e.id} value={e.id}>
@@ -92,8 +89,8 @@ export default function SoundingBroadcastPage() {
             </select>
 
             {eventsList.length === 0 && (
-              <p className="mt-2 text-[11px] text-neutral-400">
-                Belum ada agenda terdaftar. Buat agenda di menu Kalender terlebih dahulu.
+              <p className="mt-2 text-[11px] text-slate-400">
+                Belum ada agenda terdaftar.
               </p>
             )}
           </div>
@@ -101,14 +98,14 @@ export default function SoundingBroadcastPage() {
 
         {/* Kotak Pratinjau Pesan Sounding */}
         <div className="lg:col-span-2 space-y-4">
-          <div className="rounded-2xl border border-neutral-200 bg-white p-5 shadow-xs">
-            <div className="flex items-center justify-between border-b border-neutral-100 pb-3">
-              <span className="text-xs font-bold text-neutral-900">Format Teks Siaran (WhatsApp Ready)</span>
+          <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-[0_1px_3px_rgba(0,0,0,0.03)]">
+            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+              <span className="text-xs font-bold text-slate-900">Format Pesan WhatsApp</span>
               <div className="flex items-center gap-2">
                 <button
                   type="button"
                   onClick={handleCopy}
-                  className="inline-flex items-center gap-1.5 rounded-lg border border-neutral-200 px-3 py-1.5 text-xs font-semibold text-neutral-700 hover:bg-neutral-50"
+                  className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 transition-colors cursor-pointer"
                 >
                   {copied ? <Check className="h-3.5 w-3.5 text-emerald-600" /> : <Copy className="h-3.5 w-3.5" />}
                   <span>{copied ? 'Tersalin' : 'Salin Teks'}</span>
@@ -117,7 +114,7 @@ export default function SoundingBroadcastPage() {
                 <button
                   type="button"
                   onClick={handleWhatsAppShare}
-                  className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-600 px-3 py-1.5 text-xs font-semibold text-white shadow-xs hover:bg-emerald-700"
+                  className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-600 px-3 py-1.5 text-xs font-semibold text-white shadow-xs hover:bg-emerald-700 transition-colors cursor-pointer"
                 >
                   <MessageSquare className="h-3.5 w-3.5" />
                   <span>Kirim ke WhatsApp</span>
@@ -125,7 +122,7 @@ export default function SoundingBroadcastPage() {
               </div>
             </div>
 
-            <pre className="mt-4 whitespace-pre-wrap font-sans text-xs leading-relaxed text-neutral-800 bg-neutral-50 p-4 rounded-xl border border-neutral-200">
+            <pre className="mt-4 whitespace-pre-wrap font-sans text-xs leading-relaxed text-slate-800 bg-slate-50 p-4 rounded-xl border border-slate-200">
               {isPending ? 'Menyusun pesan siaran...' : soundingText || 'Pilih agenda untuk melihat format siaran.'}
             </pre>
           </div>

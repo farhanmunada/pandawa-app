@@ -4,7 +4,7 @@ Platform tata kelola administrasi, keuangan, persuratan resmi, sirkulasi aset, m
 
 ---
 
-## 🛠️ Spesifikasi Arsitektur & Tech Stack
+## Spesifikasi Arsitektur & Tech Stack
 
 * **Frontend & Backend Framework:** Next.js 16 (React 19, App Router, Server Actions, TypeScript)
 * **Database Utama:** Neon (PostgreSQL Serverless) dengan connection pooling (`-pooler`)
@@ -15,7 +15,7 @@ Platform tata kelola administrasi, keuangan, persuratan resmi, sirkulasi aset, m
 
 ---
 
-## 🏛️ Struktur Divisi & Hak Akses Organisasi
+## Struktur Divisi & Hak Akses Organisasi
 
 Sistem menerapkan model **Dynamic Multi-Role RBAC** tanpa istilah "Admin", melainkan disesuaikan dengan struktur kepengurusan:
 
@@ -31,7 +31,7 @@ Sistem menerapkan model **Dynamic Multi-Role RBAC** tanpa istilah "Admin", melai
 
 ---
 
-## 📂 Struktur Direktori Proyek
+## Struktur Direktori Proyek
 
 ```
 pandawa-app/
@@ -60,7 +60,7 @@ pandawa-app/
 
 ---
 
-## 🚀 Panduan Memulai di Lingkungan Lokal
+## Panduan Memulai di Lingkungan Lokal
 
 ### 1. Prasyarat
 * Node.js v20+ atau v24+
@@ -96,7 +96,7 @@ Buka peramban di [http://localhost:3000](http://localhost:3000).
 
 ---
 
-## 📜 Perintah Pemeliharaan Sistem
+## Perintah Pemeliharaan Sistem
 
 * **Linting Kode:** `npm run lint`
 * **Pemeriksaan Type Safety:** `npx tsc --noEmit`

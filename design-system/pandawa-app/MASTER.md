@@ -1,214 +1,71 @@
-# Design System Master File
+# Design System Master File: Pandawa App
 
-> **LOGIC:** When building a specific page, first check `design-system/pages/[page-name].md`.
-> If that file exists, its rules **override** this Master file.
-> If not, strictly follow the rules below.
-
----
-
-**Project:** Pandawa App
-**Generated:** 2026-11-22 10:55:35
-**Category:** White Noise & Ambient Sound
+> **Source of Truth:** Clean White Modern Swiss UI with 3-Color Logo Palette.
+> Strictly NO emoticons (emojis). Minimal guide text.
 
 ---
 
-## Global Rules
-
-### Color Palette
-
-| Role | Hex | CSS Variable |
-|------|-----|--------------|
-| Primary | `#475569` | `--color-primary` |
-| On Primary | `#FFFFFF` | `--color-on-primary` |
-| Secondary | `#334155` | `--color-secondary` |
-| On Secondary | `#FFFFFF` | `--color-on-secondary` |
-| Accent/CTA | `#4338CA` | `--color-accent` |
-| On Accent/CTA | `#FFFFFF` | `--color-on-accent` |
-| Background | `#0F172A` | `--color-background` |
-| Foreground | `#FFFFFF` | `--color-foreground` |
-| Card | `#192134` | `--color-card` |
-| Card Foreground | `#FFFFFF` | `--color-card-foreground` |
-| Muted | `#131B2F` | `--color-muted` |
-| Muted Foreground | `#94A3B8` | `--color-muted-foreground` |
-| Border | `rgba(255,255,255,0.08)` | `--color-border` |
-| Destructive | `#DC2626` | `--color-destructive` |
-| On Destructive | `#FFFFFF` | `--color-on-destructive` |
-| Ring | `#FFFFFF` | `--color-ring` |
-
-**Color Notes:** Ambient grey + deep indigo on dark
-
-### Typography
-
-- **Heading Font:** Inter
-- **Body Font:** Inter
-- **Mood:** minimal, clean, swiss, functional, neutral, professional
-- **Google Fonts:** [Inter + Inter](https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap)
-
-**CSS Import:**
-```css
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-```
-
-### Spacing Variables
-
-| Token | Value | Usage |
-|-------|-------|-------|
-| `--space-xs` | `4px` / `0.25rem` | Tight gaps |
-| `--space-sm` | `8px` / `0.5rem` | Icon gaps, inline spacing |
-| `--space-md` | `16px` / `1rem` | Standard padding |
-| `--space-lg` | `24px` / `1.5rem` | Section padding |
-| `--space-xl` | `32px` / `2rem` | Large gaps |
-| `--space-2xl` | `48px` / `3rem` | Section margins |
-| `--space-3xl` | `64px` / `4rem` | Hero padding |
-
-### Shadow Depths
-
-| Level | Value | Usage |
-|-------|-------|-------|
-| `--shadow-sm` | `0 1px 2px rgba(0,0,0,0.05)` | Subtle lift |
-| `--shadow-md` | `0 4px 6px rgba(0,0,0,0.1)` | Cards, buttons |
-| `--shadow-lg` | `0 10px 15px rgba(0,0,0,0.1)` | Modals, dropdowns |
-| `--shadow-xl` | `0 20px 25px rgba(0,0,0,0.15)` | Hero images, featured cards |
+**Project:** Pandawa App (Sistem Informasi Manajemen Organisasi Kepemudaan)  
+**Style Category:** Modern Swiss Minimalism & Pure White Base  
+**Target Organization:** Pandawa (Wanangsri, Tening, Wonoboyo, Temanggung)  
+**Official Brand Colors:** Extracted from `public/logo.png` (`#D8AC41` Gold on `#FFFFFF` White)
 
 ---
 
-## Component Specs
+## 1. Color Palette (White Base + 3-Color Scheme)
+
+| Role | Hex | Tailwind Utility | Usage |
+|------|-----|------------------|-------|
+| **Base Background** | `#FFFFFF` | `bg-white` | Main page background, cards, sheets, pure crisp surface |
+| **Surface Secondary** | `#F8FAFC` | `bg-slate-50` | App shell background, table headers, subtle wells |
+| **Color 1: Logo Gold (Brand)** | `#D8AC41` | `text-[#D8AC41]`, `bg-[#D8AC41]` | Official logo emblem, active tabs, brand accents, premium tags |
+| **Logo Gold Dark (A11y Text)** | `#B4821E` | `text-[#B4821E]` | High-contrast gold text on white (> 4.5:1 ratio) |
+| **Color 2: Obsidian Slate (Dark)** | `#0F172A` | `bg-slate-900`, `text-slate-900` | Primary buttons, deep headings, high contrast typography |
+| **Color 3: Cool Slate (Muted)** | `#64748B` | `text-slate-500`, `border-slate-200` | Subtitles, secondary text, metadata labels, borders |
+| **Border / Divider** | `#E2E8F0` | `border-slate-200` | 1px clean crisp borders, table rules |
+| **Status: Success** | `#059669` | `text-emerald-700 bg-emerald-50` | Active, approved, published, return confirmed |
+| **Status: Pending / Alert** | `#D97706` | `text-amber-700 bg-amber-50` | Draft, waiting approval, internal loan |
+| **Status: Danger / Emergency** | `#DC2626` | `text-rose-700 bg-rose-50` | Confidential report, expense rejection, overdue |
+
+---
+
+## 2. Typography & Text Discipline
+
+- **Font Family:** `Inter`, system-ui, sans-serif
+- **Rule on Guide Text:** **MINIMIZE GUIDE TEXT**.
+  - ❌ Avoid wordy explanatory paragraphs ("Silakan isi form ini untuk mengajukan...", "Halaman ini digunakan untuk...").
+  - ✅ Use concise semantic labels, crisp placeholders, and direct micro-copy ("Ajukan Surat", "Nomor Surat", "Total Saldo").
+- **Strictly NO Emoticons (Emojis):**
+  - ❌ Forbidden: 💰, 📅, 📄, 📦, 👥, 🚨, ✨, 🚀, 🏛️, 🛠️, etc.
+  - ✅ Required: Lucide SVG icons (`Wallet`, `Calendar`, `FileText`, `Package`, `Users`, `ShieldAlert`) with consistent `h-4 w-4` or `h-5 w-5` sizing and 1.5–2px stroke.
+
+---
+
+## 3. Component Architecture
 
 ### Buttons
+- **Primary:** `bg-slate-900 text-white hover:bg-slate-800 text-xs font-medium px-4 py-2 rounded-lg transition-colors cursor-pointer`
+- **Brand Accent:** `bg-[#D8AC41] text-slate-900 hover:bg-[#c69b36] text-xs font-semibold px-4 py-2 rounded-lg transition-colors cursor-pointer`
+- **Secondary / Outline:** `bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 text-xs font-medium px-4 py-2 rounded-lg transition-colors cursor-pointer`
+- **Ghost:** `text-slate-600 hover:text-slate-900 hover:bg-slate-100 text-xs font-medium px-3 py-1.5 rounded-lg transition-colors cursor-pointer`
 
-```css
-/* Primary Button */
-.btn-primary {
-  background: #4338CA;
-  color: white;
-  padding: 12px 24px;
-  border-radius: 8px;
-  font-weight: 600;
-  transition: all 200ms ease;
-  cursor: pointer;
-}
+### Cards & Panels
+- **Standard Card:** `rounded-xl border border-slate-200 bg-white p-5 shadow-[0_1px_3px_rgba(0,0,0,0.04)]`
+- **Interactive Card:** `rounded-xl border border-slate-200 bg-white p-5 shadow-[0_1px_3px_rgba(0,0,0,0.04)] hover:border-slate-300 hover:shadow-md transition-all cursor-pointer`
+- **Stat Metric:** Large bold number (`text-2xl font-bold tracking-tight text-slate-900`), small uppercase label (`text-[11px] font-semibold tracking-wider text-slate-500 uppercase`).
 
-.btn-primary:hover {
-  opacity: 0.9;
-  transform: translateY(-1px);
-}
+### Inputs & Selects
+- `h-9 w-full rounded-lg border border-slate-200 bg-white px-3 py-1 text-xs text-slate-900 placeholder:text-slate-400 focus:border-[#D8AC41] focus:ring-1 focus:ring-[#D8AC41] outline-none transition-colors`
 
-/* Secondary Button */
-.btn-secondary {
-  background: transparent;
-  color: #475569;
-  border: 2px solid #475569;
-  padding: 12px 24px;
-  border-radius: 8px;
-  font-weight: 600;
-  transition: all 200ms ease;
-  cursor: pointer;
-}
-```
-
-### Cards
-
-```css
-.card {
-  background: #0F172A;
-  border-radius: 12px;
-  padding: 24px;
-  box-shadow: var(--shadow-md);
-  transition: all 200ms ease;
-  cursor: pointer;
-}
-
-.card:hover {
-  box-shadow: var(--shadow-lg);
-  transform: translateY(-2px);
-}
-```
-
-### Inputs
-
-```css
-.input {
-  padding: 12px 16px;
-  border: 1px solid #E2E8F0;
-  border-radius: 8px;
-  font-size: 16px;
-  transition: border-color 200ms ease;
-}
-
-.input:focus {
-  border-color: #475569;
-  outline: none;
-  box-shadow: 0 0 0 3px #47556920;
-}
-```
-
-### Modals
-
-```css
-.modal-overlay {
-  background: rgba(0, 0, 0, 0.5);
-  backdrop-filter: blur(4px);
-}
-
-.modal {
-  background: white;
-  border-radius: 16px;
-  padding: 32px;
-  box-shadow: var(--shadow-xl);
-  max-width: 500px;
-  width: 90%;
-}
-```
+### Navigation & Header
+- **Top HeaderBar:** Clean white background (`bg-white/95 backdrop-blur border-b border-slate-200`), Pandawa logo (`/logo.png`) with brand gold accent badge.
+- **BottomNav:** Clean white (`bg-white border-t border-slate-200`), active item highlighted with `#D8AC41` brand gold and dark slate typography.
 
 ---
 
-## Style Guidelines
-
-**Style:** Minimalism & Swiss Style
-
-**Keywords:** Clean, simple, spacious, functional, white space, high contrast, geometric, sans-serif, grid-based, essential
-
-**Best For:** Enterprise apps, dashboards, documentation sites, SaaS platforms, professional tools
-
-**Key Effects:** Subtle hover (200-250ms), smooth transitions, sharp shadows if any, clear type hierarchy, fast loading
-
-### Page Pattern
-
-**Pattern Name:** Hero + Testimonials + CTA
-
-- **Conversion Strategy:** Social proof before CTA. Use a concise set of verified testimonials with photo, name, and role. CTA after social proof. Provide previous/next and pause controls; stop rotation on focus, hover, and reduced motion; announce slide position. Previous/next buttons and keyboard controls must expose every slide without dragging.
-- **CTA Placement:** Hero (sticky) + Post-testimonials
-- **Section Order:** Hero > Problem statement > Solution overview > Testimonials carousel > CTA
-
----
-
-## Anti-Patterns (Do NOT Use)
-
-- ❌ Excessive decoration
-- ❌ Pure white backgrounds
-
-### Additional Forbidden Patterns
-
-- ❌ **Emojis as icons** — Use SVG icons (Heroicons, Lucide, Simple Icons)
-- ❌ **Missing cursor:pointer** — All clickable elements must have cursor:pointer
-- ❌ **Layout-shifting hovers** — Avoid scale transforms that shift layout
-- ❌ **Low contrast text** — Maintain 4.5:1 minimum contrast ratio
-- ❌ **Instant state changes** — Always use transitions (150-300ms)
-- ❌ **Invisible focus states** — Focus states must be visible for a11y
-
----
-
-## Pre-Delivery Checklist
-
-Before delivering any UI code, verify:
-
-- [ ] No emojis used as icons (use SVG instead)
-- [ ] All icons from consistent icon set (Heroicons/Lucide)
-- [ ] `cursor-pointer` on all clickable elements
-- [ ] Hover states with smooth transitions (150-300ms)
-- [ ] Light mode: text contrast 4.5:1 minimum
-- [ ] Focus states visible for keyboard navigation
-- [ ] `prefers-reduced-motion` respected
-- [ ] Responsive: 375px, 768px, 1024px, 1440px
-- [ ] No content hidden behind fixed navbars
-- [ ] No horizontal scroll on mobile
+## 4. Verification Checklist
+- [x] Pure white base (`#FFFFFF`) with `#0F172A` (Obsidian) and `#D8AC41` (Logo Gold)
+- [x] Zero emoticons in all UI components and documentation
+- [x] Guide text minimized to concise labels
+- [x] All interactive controls have `cursor-pointer` and visible hover/focus states
+- [x] Mobile-first layout fully responsive at 375px, 768px, and desktop

@@ -1,4 +1,5 @@
 import React from 'react';
+import Image from 'next/image';
 import Link from 'next/link';
 import {
   Calendar,
@@ -9,6 +10,7 @@ import {
   ShieldAlert,
   ArrowRight,
   TrendingUp,
+  Plus,
 } from 'lucide-react';
 import { AppShell } from '@/components/layout/AppShell';
 
@@ -17,74 +19,106 @@ export default function HomePage() {
     { label: 'Saldo Kas Aktif', value: 'Rp 14.250.000', change: '+Rp 750.000 bln ini' },
     { label: 'Agenda Terdekat', value: 'Kerja Bakti Akbar', change: '28 Nov 2026' },
     { label: 'Inventaris Tersedia', value: '18 Unit Aset', change: 'Harga Dalam & Luar' },
-    { label: 'Status Laporan', value: '2 Tiket Ditangani', change: 'Divisi Keamanan' },
+    { label: 'Penanganan Kasus', value: '2 Laporan Ditangani', change: 'Divisi Keamanan' },
   ];
 
   const modules = [
     {
-      title: 'Kalender Terpadu & Sounding',
+      title: 'Kalender & Sounding',
       division: 'Divisi Humas',
-      desc: 'Kelola agenda kegiatan yang tersinkron ke dashboard anggota & buat broadcast sounding WhatsApp.',
+      desc: 'Agenda terintegrasi dan siaran pesan WhatsApp pengumuman kegiatan.',
       href: '/events',
       icon: Calendar,
-      color: 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300',
     },
     {
-      title: 'Arus Kas & Iuran Rutin',
+      title: 'Arus Kas & Iuran',
       division: 'Divisi Keuangan',
-      desc: 'Buku kas multi-wallet, approval pengeluaran besar, dan pencatatan iuran wajib anggota.',
+      desc: 'Multi-wallet kas, approval pengeluaran, dan rekonsiliasi iuran rutin.',
       href: '/finance',
       icon: Wallet,
-      color: 'bg-blue-50 text-blue-700 dark:bg-blue-950/60 dark:text-blue-300',
     },
     {
-      title: 'Persuratan Resmi (TTD)',
+      title: 'Persuratan Resmi',
       division: 'Kesekretariatan',
-      desc: 'Penomoran surat otomatis, verifikasi draf surat divisi, dan arsip PDF resmi tanda tangan.',
+      desc: 'Nomor surat otomatis, verifikasi draf divisi, dan pengesahan TTD sah.',
       href: '/letters',
       icon: FileText,
-      color: 'bg-indigo-50 text-indigo-700 dark:bg-indigo-950/60 dark:text-indigo-300',
     },
     {
       title: 'Inventaris Harga Ganda',
       division: 'Divisi Logistik',
-      desc: 'Katalog perlengkapan, sirkulasi pinjam warga (harga dalam) & sewa komersial (harga luar).',
+      desc: 'Katalog barang, pinjam warga subsidi, dan sewa komersial kas masuk.',
       href: '/inventory',
       icon: Package,
-      color: 'bg-amber-50 text-amber-700 dark:bg-amber-950/60 dark:text-amber-300',
     },
     {
-      title: 'Internal Anggota & Jabatan',
+      title: 'Data Anggota & Jabatan',
       division: 'Wakil Ketua',
-      desc: 'Kelola struktur pengurus, pendaftaran anggota, penetapan jabatan, dan pembagian divisi.',
+      desc: 'Pengelolaan struktur pengurus, status keanggotaan, dan penugasan divisi.',
       href: '/internal/members',
       icon: Users,
-      color: 'bg-purple-50 text-purple-700 dark:bg-purple-950/60 dark:text-purple-300',
     },
     {
-      title: 'Pengaduan: Publik vs Rahasia',
+      title: 'Laporan Publik & Rahasia',
       division: 'Divisi Keamanan',
-      desc: 'Aspirasi warga pada forum publik dan pelaporan insiden rahasia untuk mediasi lapangan.',
+      desc: 'Aspirasi warga terbuka dan insiden rahasia berpenugasan petugas lapangan.',
       href: '/incidents',
       icon: ShieldAlert,
-      color: 'bg-rose-50 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300',
     },
   ];
 
   return (
     <AppShell>
       <div className="space-y-6">
-        {/* Banner Selamat Datang */}
-        <div className="rounded-2xl bg-gradient-to-r from-blue-700 to-indigo-800 p-5 text-white shadow-sm">
-          <span className="inline-block rounded-full bg-blue-500/30 px-2.5 py-0.5 text-[11px] font-semibold uppercase tracking-wider text-blue-100">
-            Organisasi Kepemudaan
-          </span>
-          <h2 className="mt-2 text-xl font-bold tracking-tight">
-            Selamat Datang di Pandawa App
-          </h2>
-          <p className="mt-1 text-xs text-blue-100/90 leading-relaxed">
-            Platform terpadu administrasi, kas, kalender Humas, inventaris, dan penanganan insiden.
-          </p>
+        {/* Hero Card Modern White with Logo */}
+        <div className="rounded-2xl border border-slate-200 bg-white p-5 md:p-6 shadow-[0_1px_3px_rgba(0,0,0,0.03)]">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div className="flex items-center gap-3.5">
+              <div className="relative h-12 w-12 flex-shrink-0 overflow-hidden rounded-xl border border-slate-200 bg-white p-1 shadow-xs">
+                <Image
+                  src="/logo.png"
+                  alt="Logo Pandawa"
+                  width={48}
+                  height={48}
+                  className="h-full w-full object-contain"
+                  priority
+                />
+              </div>
+              <div>
+                <div className="flex items-center gap-2">
+                  <span className="text-xs font-bold tracking-tight text-slate-900">
+                    ORGANISASI PANDAWA
+                  </span>
+                  <span className="rounded-full border border-[#D8AC41]/40 bg-[#D8AC41]/10 px-2 py-0.5 text-[9px] font-semibold text-[#B4821E]">
+                    Aktif
+                  </span>
+                </div>
+                <h2 className="text-base font-bold text-slate-900 tracking-tight">
+                  Sistem Informasi Administrasi & Operasional
+                </h2>
+                <p className="text-[11px] text-slate-500">
+                  Wanangsri, Wonoboyo, Temanggung Regency
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <Link
+                href="/letters"
+                className="flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-50 transition-colors cursor-pointer"
+              >
+                <Plus className="h-3.5 w-3.5 text-slate-500" />
+                Buat Surat
+              </Link>
+              <Link
+                href="/finance"
+                className="flex items-center gap-1.5 rounded-lg bg-slate-900 px-3 py-1.5 text-xs font-medium text-white hover:bg-slate-800 transition-colors cursor-pointer"
+              >
+                <Plus className="h-3.5 w-3.5 text-[#D8AC41]" />
+                Catat Transaksi
+              </Link>
+            </div>
+          </div>
         </div>
 
         {/* Ringkasan Cepat */}
@@ -92,15 +126,15 @@ export default function HomePage() {
           {stats.map((s) => (
             <div
               key={s.label}
-              className="rounded-xl border border-neutral-200 bg-white p-3.5 shadow-xs dark:border-neutral-800 dark:bg-neutral-900"
+              className="rounded-xl border border-slate-200 border-l-2 border-l-[#D8AC41] bg-white p-3.5 shadow-[0_1px_2px_rgba(0,0,0,0.02)]"
             >
-              <p className="text-[11px] font-medium text-neutral-500 dark:text-neutral-400">
+              <p className="text-[10px] font-semibold tracking-wider text-slate-400 uppercase">
                 {s.label}
               </p>
-              <p className="mt-1 text-sm font-bold text-neutral-900 dark:text-neutral-100 truncate">
+              <p className="mt-1 text-sm font-bold text-slate-900 truncate">
                 {s.value}
               </p>
-              <div className="mt-1 flex items-center text-[10px] text-blue-600 dark:text-blue-400 font-medium">
+              <div className="mt-1 flex items-center text-[10px] text-[#B4821E] font-medium">
                 <TrendingUp className="mr-1 h-3 w-3" />
                 <span>{s.change}</span>
               </div>
@@ -108,14 +142,14 @@ export default function HomePage() {
           ))}
         </div>
 
-        {/* Menu Modul Berdasarkan Divisi */}
+        {/* Grid 6 Modul Divisi */}
         <div>
           <div className="mb-3 flex items-center justify-between">
-            <h3 className="text-sm font-bold text-neutral-900 dark:text-neutral-100">
-              Modul Divisi & Layanan
+            <h3 className="text-xs font-bold uppercase tracking-wider text-slate-500">
+              Modul Operasional
             </h3>
-            <span className="text-[11px] font-medium text-neutral-500">
-              6 Modul Terintegrasi
+            <span className="text-[10px] font-medium text-slate-400">
+              6 Modul Divisi
             </span>
           </div>
 
@@ -126,28 +160,29 @@ export default function HomePage() {
                 <Link
                   key={m.title}
                   href={m.href}
-                  className="group relative flex flex-col justify-between rounded-xl border border-neutral-200 bg-white p-4 shadow-xs transition hover:border-blue-400 hover:shadow-md dark:border-neutral-800 dark:bg-neutral-900 dark:hover:border-blue-600"
+                  className="group relative flex flex-col justify-between rounded-xl border border-slate-200 bg-white p-4 shadow-[0_1px_2px_rgba(0,0,0,0.02)] hover:border-[#D8AC41] hover:shadow-md transition-all cursor-pointer"
                 >
                   <div>
                     <div className="flex items-center justify-between">
-                      <div className={`flex h-10 w-10 items-center justify-center rounded-lg ${m.color}`}>
-                        <Icon className="h-5 w-5" />
+                      <div className="flex h-9 w-9 items-center justify-center rounded-lg border border-slate-200 bg-slate-50 text-slate-800 group-hover:border-[#D8AC41]/40 group-hover:bg-[#D8AC41]/10 group-hover:text-[#B4821E] transition-colors">
+                        <Icon className="h-4 w-4" />
                       </div>
-                      <span className="text-[10px] font-semibold text-neutral-400 uppercase tracking-wider">
+                      <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider">
                         {m.division}
                       </span>
                     </div>
-                    <h4 className="mt-3 text-sm font-bold text-neutral-900 group-hover:text-blue-600 dark:text-neutral-100 dark:group-hover:text-blue-400">
+
+                    <h4 className="mt-3 text-xs font-bold text-slate-900 group-hover:text-[#B4821E] transition-colors">
                       {m.title}
                     </h4>
-                    <p className="mt-1 text-xs text-neutral-500 leading-relaxed dark:text-neutral-400">
+                    <p className="mt-1 text-[11px] text-slate-500 leading-relaxed">
                       {m.desc}
                     </p>
                   </div>
 
-                  <div className="mt-4 flex items-center text-xs font-semibold text-blue-600 dark:text-blue-400">
-                    <span>Buka Modul</span>
-                    <ArrowRight className="ml-1 h-3.5 w-3.5 transition group-hover:translate-x-1" />
+                  <div className="mt-4 flex items-center text-[11px] font-semibold text-slate-700 group-hover:text-slate-900">
+                    <span>Akses Layanan</span>
+                    <ArrowRight className="ml-1 h-3 w-3 text-slate-400 group-hover:text-[#B4821E] transition-transform group-hover:translate-x-0.5" />
                   </div>
                 </Link>
               );

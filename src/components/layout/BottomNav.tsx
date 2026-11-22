@@ -11,14 +11,14 @@ export function BottomNav() {
 
   const navItems = [
     { label: 'Beranda', href: '/', icon: Home },
-    { label: 'Kalender', href: '/events', icon: Calendar },
+    { label: 'Agenda', href: '/events', icon: Calendar },
     { label: 'Kas', href: '/finance', icon: Wallet },
     { label: 'Surat', href: '/letters', icon: FileText },
-    { label: 'Inventaris', href: '/inventory', icon: Package },
+    { label: 'Aset', href: '/inventory', icon: Package },
   ];
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-40 flex h-16 border-t border-neutral-200 bg-white/95 px-2 backdrop-blur-md dark:border-neutral-800 dark:bg-neutral-950/95 md:hidden">
+    <nav className="fixed bottom-0 left-0 right-0 z-40 flex h-16 border-t border-slate-200 bg-white/95 px-2 backdrop-blur-md md:hidden">
       <div className="mx-auto flex w-full max-w-md items-center justify-around">
         {navItems.map((item) => {
           const Icon = item.icon;
@@ -29,14 +29,24 @@ export function BottomNav() {
               key={item.href}
               href={item.href}
               className={cn(
-                'flex flex-col items-center justify-center py-1 transition-colors',
+                'relative flex flex-col items-center justify-center py-1 transition-colors cursor-pointer',
                 isActive
-                  ? 'text-blue-600 dark:text-blue-400 font-semibold'
-                  : 'text-neutral-500 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-neutral-100'
+                  ? 'text-slate-900 font-semibold'
+                  : 'text-slate-400 hover:text-slate-700'
               )}
             >
-              <Icon className="h-5 w-5" />
-              <span className="mt-1 text-[11px] leading-none">{item.label}</span>
+              <div
+                className={cn(
+                  'flex h-8 w-8 items-center justify-center rounded-lg transition-colors',
+                  isActive ? 'bg-[#D8AC41]/15 text-[#B4821E]' : ''
+                )}
+              >
+                <Icon className="h-4 w-4" />
+              </div>
+              <span className="mt-0.5 text-[10px] leading-none tracking-tight">{item.label}</span>
+              {isActive && (
+                <span className="absolute bottom-0.5 h-1 w-1 rounded-full bg-[#D8AC41]" />
+              )}
             </Link>
           );
         })}

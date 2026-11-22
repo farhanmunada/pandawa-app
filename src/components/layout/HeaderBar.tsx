@@ -1,6 +1,8 @@
 'use client';
 
 import React from 'react';
+import Image from 'next/image';
+import Link from 'next/link';
 import { Menu, Bell } from 'lucide-react';
 
 interface HeaderBarProps {
@@ -11,41 +13,54 @@ interface HeaderBarProps {
 
 export function HeaderBar({
   onOpenDrawer,
-  activePeriodName = 'Periode 2026–2028',
+  activePeriodName = '2026–2028',
   userName = 'Pengurus',
 }: HeaderBarProps) {
   return (
-    <header className="sticky top-0 z-30 flex h-14 w-full items-center justify-between border-b border-neutral-200 bg-white/90 px-4 backdrop-blur-md dark:border-neutral-800 dark:bg-neutral-950/90">
+    <header className="sticky top-0 z-30 flex h-14 w-full items-center justify-between border-b border-slate-200 bg-white/95 px-4 backdrop-blur-md">
       <div className="flex items-center gap-3">
         <button
           type="button"
           onClick={onOpenDrawer}
-          className="rounded-lg p-2 text-neutral-600 hover:bg-neutral-100 dark:text-neutral-300 dark:hover:bg-neutral-800"
+          className="flex h-9 w-9 items-center justify-center rounded-lg border border-slate-200 text-slate-700 hover:bg-slate-50 transition-colors cursor-pointer"
           aria-label="Buka Menu"
         >
-          <Menu className="h-5 w-5" />
+          <Menu className="h-4 w-4" />
         </button>
-        <div>
-          <h1 className="text-sm font-bold tracking-tight text-neutral-900 dark:text-neutral-100">
-            Pandawa App
-          </h1>
-          <span className="text-[10px] font-medium text-blue-600 dark:text-blue-400">
-            {activePeriodName}
-          </span>
-        </div>
+
+        <Link href="/" className="flex items-center gap-2.5">
+          <div className="relative h-8 w-8 flex-shrink-0 overflow-hidden rounded-md border border-slate-200 bg-white p-0.5">
+            <Image
+              src="/logo.png"
+              alt="Logo Pandawa"
+              width={32}
+              height={32}
+              className="h-full w-full object-contain"
+              priority
+            />
+          </div>
+          <div className="flex flex-col">
+            <span className="text-xs font-bold tracking-tight text-slate-900 leading-none">
+              PANDAWA
+            </span>
+            <span className="text-[10px] font-medium text-[#B4821E] leading-tight">
+              Periode {activePeriodName}
+            </span>
+          </div>
+        </Link>
       </div>
 
       <div className="flex items-center gap-2">
         <button
           type="button"
-          className="relative rounded-lg p-2 text-neutral-600 hover:bg-neutral-100 dark:text-neutral-300 dark:hover:bg-neutral-800"
+          className="relative flex h-9 w-9 items-center justify-center rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 transition-colors cursor-pointer"
           aria-label="Notifikasi"
         >
           <Bell className="h-4 w-4" />
-          <span className="absolute right-1.5 top-1.5 h-2 w-2 rounded-full bg-red-500" />
+          <span className="absolute right-2 top-2 h-1.5 w-1.5 rounded-full bg-[#D8AC41]" />
         </button>
 
-        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-100 text-xs font-semibold text-blue-700 dark:bg-blue-900/50 dark:text-blue-300">
+        <div className="flex h-9 w-9 items-center justify-center rounded-lg border border-slate-200 bg-slate-900 text-xs font-bold text-[#D8AC41]">
           {userName.charAt(0).toUpperCase()}
         </div>
       </div>

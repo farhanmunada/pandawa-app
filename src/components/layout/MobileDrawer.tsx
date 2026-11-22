@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
@@ -13,6 +14,7 @@ import {
   ShieldAlert,
   ClipboardList,
   Megaphone,
+  ArrowRight,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -27,21 +29,21 @@ export function MobileDrawer({ isOpen, onClose }: MobileDrawerProps) {
 
   const menuSections = [
     {
-      title: 'Operasional Utama',
+      title: 'Operasional',
       items: [
-        { label: 'Kalender Agenda & Humas', href: '/events', icon: Calendar },
-        { label: 'Pesan Sounding WhatsApp', href: '/events/sounding', icon: Megaphone },
-        { label: 'Arus Kas & Iuran', href: '/finance', icon: Wallet },
+        { label: 'Kalender Agenda', href: '/events', icon: Calendar },
+        { label: 'Broadcast Sounding', href: '/events/sounding', icon: Megaphone },
+        { label: 'Buku Kas Multi-Wallet', href: '/finance', icon: Wallet },
         { label: 'Persuratan Resmi', href: '/letters', icon: FileText },
-        { label: 'Inventaris & Sewa', href: '/inventory', icon: Package },
+        { label: 'Katalog Inventaris', href: '/inventory', icon: Package },
       ],
     },
     {
-      title: 'Keorganisasian & Penanganan',
+      title: 'Tata Kelola',
       items: [
-        { label: 'Internal Anggota (Wakil Ketua)', href: '/internal/members', icon: Users },
-        { label: 'Laporan & Insiden (Keamanan)', href: '/incidents', icon: ShieldAlert },
-        { label: 'Audit Log Sistem (Ketua/Wakil)', href: '/audit', icon: ClipboardList },
+        { label: 'Data Anggota & Jabatan', href: '/internal/members', icon: Users },
+        { label: 'Laporan & Pengaduan', href: '/incidents', icon: ShieldAlert },
+        { label: 'Jejak Audit Aktivitas', href: '/audit', icon: ClipboardList },
       ],
     },
   ];
@@ -52,61 +54,86 @@ export function MobileDrawer({ isOpen, onClose }: MobileDrawerProps) {
     <div className="fixed inset-0 z-50 flex">
       {/* Backdrop */}
       <div
-        className="fixed inset-0 bg-black/50 transition-opacity"
+        className="fixed inset-0 bg-slate-900/40 backdrop-blur-xs transition-opacity"
         onClick={onClose}
         aria-hidden="true"
       />
 
       {/* Drawer Panel */}
-      <div className="relative flex w-full max-w-xs flex-1 flex-col bg-white p-4 shadow-xl dark:bg-neutral-900">
-        <div className="flex items-center justify-between pb-3 border-b border-neutral-200 dark:border-neutral-800">
-          <div>
-            <h2 className="text-base font-bold text-neutral-900 dark:text-neutral-100">
-              Menu Organisasi
-            </h2>
-            <p className="text-xs text-neutral-500 dark:text-neutral-400">
-              Sistem Informasi Kepemudaan
-            </p>
+      <div className="relative z-10 flex w-full max-w-xs flex-col bg-white border-r border-slate-200 shadow-xl">
+        {/* Header Drawer */}
+        <div className="flex items-center justify-between border-b border-slate-200 p-4">
+          <div className="flex items-center gap-2.5">
+            <div className="relative h-8 w-8 flex-shrink-0 overflow-hidden rounded-md border border-slate-200 bg-white p-0.5">
+              <Image
+                src="/logo.png"
+                alt="Logo Pandawa"
+                width={32}
+                height={32}
+                className="h-full w-full object-contain"
+              />
+            </div>
+            <div>
+              <p className="text-xs font-bold text-slate-900 leading-none">PANDAWA APP</p>
+              <p className="text-[10px] text-[#B4821E] font-medium leading-tight">Wanangsri, Wonoboyo</p>
+            </div>
           </div>
           <button
             type="button"
             onClick={onClose}
-            className="rounded-lg p-2 text-neutral-500 hover:bg-neutral-100 dark:text-neutral-400 dark:hover:bg-neutral-800"
+            className="flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200 text-slate-500 hover:bg-slate-50 transition-colors cursor-pointer"
+            aria-label="Tutup Menu"
           >
-            <X className="h-5 w-5" />
+            <X className="h-4 w-4" />
           </button>
         </div>
 
-        <div className="mt-4 flex-1 overflow-y-auto space-y-6">
+        {/* Menu Navigation List */}
+        <div className="flex-1 overflow-y-auto p-4 space-y-6">
           {menuSections.map((section) => (
-            <div key={section.title}>
-              <h3 className="px-2 text-[11px] font-semibold uppercase tracking-wider text-neutral-400">
+            <div key={section.title} className="space-y-1.5">
+              <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400 px-2.5">
                 {section.title}
-              </h3>
-              <div className="mt-2 space-y-1">
+              </p>
+              <div className="space-y-0.5">
                 {section.items.map((item) => {
                   const Icon = item.icon;
                   const isActive = pathname === item.href;
+
                   return (
                     <Link
                       key={item.href}
                       href={item.href}
                       onClick={onClose}
                       className={cn(
-                        'flex items-center gap-3 rounded-lg px-3 py-2 text-xs font-medium transition-colors',
+                        'flex items-center justify-between rounded-lg px-2.5 py-2 text-xs font-medium transition-colors cursor-pointer',
                         isActive
-                          ? 'bg-blue-50 text-blue-600 dark:bg-blue-950 dark:text-blue-400 font-semibold'
-                          : 'text-neutral-700 hover:bg-neutral-100 dark:text-neutral-300 dark:hover:bg-neutral-800'
+                          ? 'bg-slate-900 text-white font-semibold'
+                          : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
                       )}
                     >
-                      <Icon className="h-4 w-4" />
-                      <span>{item.label}</span>
+                      <div className="flex items-center gap-2.5">
+                        <Icon
+                          className={cn(
+                            'h-4 w-4',
+                            isActive ? 'text-[#D8AC41]' : 'text-slate-400'
+                          )}
+                        />
+                        <span>{item.label}</span>
+                      </div>
+                      <ArrowRight className="h-3 w-3 opacity-40" />
                     </Link>
                   );
                 })}
               </div>
             </div>
           ))}
+        </div>
+
+        {/* Footer info */}
+        <div className="border-t border-slate-200 p-3 bg-slate-50 text-[10px] text-slate-500 text-center">
+          <p className="font-semibold text-slate-700">Pandawa Official</p>
+          <p>Email: pandawaofficial02@gmail.com</p>
         </div>
       </div>
     </div>
