@@ -58,6 +58,13 @@ export function Sidebar({ userName = 'Pengurus', userRole = 'Anggota' }: Sidebar
     },
   ];
 
+  const allHrefs = menuGroups.flatMap((g) => g.items.map((i) => i.href));
+  const activeHref = allHrefs
+    .filter((href) =>
+      href === '/' ? pathname === '/' : pathname === href || pathname.startsWith(href + '/')
+    )
+    .sort((a, b) => b.length - a.length)[0];
+
   const handleSignOut = async () => {
     try {
       await logoutAction();
@@ -106,10 +113,7 @@ export function Sidebar({ userName = 'Pengurus', userRole = 'Anggota' }: Sidebar
               <div className="space-y-0.5">
                 {group.items.map((item) => {
                   const Icon = item.icon;
-                  const isActive =
-                    item.href === '/'
-                      ? pathname === '/'
-                      : pathname.startsWith(item.href);
+                  const isActive = item.href === activeHref;
 
                   return (
                     <Link
