@@ -46,7 +46,7 @@ export default function SignUpPage() {
         <div className="text-center">
           <div className="mx-auto mb-3 h-12 w-12 overflow-hidden rounded-xl border border-slate-200 bg-white p-1 shadow-xs">
             <Image
-              src="/logo.png"
+              src="/favicon.png"
               alt="Logo Pandawa"
               width={48}
               height={48}

@@ -31,7 +31,7 @@ export function HeaderBar({
         <Link href="/" className="flex items-center gap-2.5">
           <div className="relative h-8 w-8 flex-shrink-0 overflow-hidden rounded-md border border-slate-200 bg-white p-0.5">
             <Image
-              src="/logo.png"
+              src="/favicon.png"
               alt="Logo Pandawa"
               width={32}
               height={32}

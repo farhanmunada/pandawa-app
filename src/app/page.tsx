@@ -76,7 +76,7 @@ export default function HomePage() {
             <div className="flex items-center gap-3.5">
               <div className="relative h-12 w-12 flex-shrink-0 overflow-hidden rounded-xl border border-slate-200 bg-white p-1 shadow-xs">
                 <Image
-                  src="/logo.png"
+                  src="/favicon.png"
                   alt="Logo Pandawa"
                   width={48}
                   height={48}

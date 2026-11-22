@@ -9,10 +9,10 @@ export function Letterhead({ className = '' }: LetterheadProps) {
   return (
     <div className={`w-full bg-white text-neutral-900 ${className}`}>
       <div className="flex items-center gap-5 pb-3">
-        {/* Logo Organisasi dari /public/logo.png */}
+        {/* Logo Organisasi dari Favicon */}
         <div className="relative h-20 w-20 flex-shrink-0">
           <Image
-            src="/logo.png"
+            src="/favicon.png"
             alt="Logo Organisasi Kepemudaan Pandawa"
             width={80}
             height={80}
